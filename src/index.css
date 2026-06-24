@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0D0D0D;
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #161616;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #FF5A1F;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  .section-heading {
+    @apply text-3xl md:text-4xl font-bold text-white mb-2;
+  }
+
+  .section-subheading {
+    @apply text-brand-gray text-sm uppercase tracking-widest font-medium mb-2;
+  }
+
+  .orange-accent {
+    @apply text-brand-orange;
+  }
+
+  .btn-primary {
+    @apply bg-brand-orange hover:bg-brand-orange-dark text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-brand-orange/30 hover:-translate-y-0.5;
+  }
+
+  .btn-outline {
+    @apply border border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 hover:-translate-y-0.5;
+  }
+
+  .card {
+    @apply bg-brand-card rounded-xl border border-brand-border p-6 transition-all duration-300 hover:border-brand-orange/50 hover:shadow-lg hover:shadow-brand-orange/10 hover:-translate-y-1;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #FF5A1F, #ff8c42);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(255, 90, 31, 0.3);
+  }
+
+  .bg-card-gradient {
+    background: linear-gradient(145deg, #1a1a1a, #161616);
+  }
+}
+
+/* Progress bar animation */
+.progress-bar {
+  width: 0%;
+  transition: width 1.4s ease-in-out;
+}
+
+/* Navbar blur */
+.navbar-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Geometric lines for hero */
+.geo-line {
+  position: absolute;
+  border: 1px solid rgba(255, 90, 31, 0.15);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Testimonial slider */
+.slider-transition {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Mobile menu */
+.mobile-menu {
+  animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating scroll icon */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+.bounce-slow {
+  animation: bounce-slow 2s infinite;
+}
