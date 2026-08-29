@@ -119,7 +119,7 @@ export default function Hero() {
               </p>
               <p className="text-brand-gray/70 mt-1 text-sm sm:text-base">
                 Laravel · React · WordPress · Flutter —{' '}
-                <span className="text-shimmer font-semibold">supercharged with AI</span>
+                <span className="text-shimmer font-semibold">with AI in the loop</span>
               </p>
             </div>
 
