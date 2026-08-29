@@ -30,6 +30,25 @@
     background: #FF5A1F;
     border-radius: 3px;
   }
+
+  /* Keyboard users must always be able to see where they are. Scoped to
+     :focus-visible so mouse clicks don't leave rings behind. */
+  :focus-visible {
+    outline: 2px solid #FF5A1F;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* Jump straight to content — first stop for keyboard and screen-reader users */
+  .skip-link {
+    @apply absolute left-4 -top-20 z-[100] bg-brand-orange text-white font-semibold px-4 py-2.5 rounded-lg transition-all;
+  }
+
+  .skip-link:focus {
+    @apply top-4;
+  }
 }
 
 @layer components {
@@ -148,4 +167,247 @@
 
 .bounce-slow {
   animation: bounce-slow 2s infinite;
+}
+
+/* ============================================
+   3D / DEPTH SYSTEM
+   ============================================ */
+
+/* Perspective wrapper — parent of any tilting child */
+.scene {
+  perspective: 1000px;
+  perspective-origin: center;
+}
+
+/* The tilting surface itself. Transform is driven from JS (useTilt). */
+.tilt-3d {
+  transform: perspective(900px) rotateX(0) rotateY(0) scale(1);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* While the cursor is inside, drop the easing so it tracks 1:1 */
+.tilt-3d.is-tilting {
+  transition: transform 0.08s linear;
+}
+
+/* Children float at different depths for real parallax inside the card */
+.layer-1 { transform: translateZ(20px); }
+.layer-2 { transform: translateZ(40px); }
+.layer-3 { transform: translateZ(60px); }
+
+/* Cursor-following specular highlight */
+.glare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.14),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.glare:hover::after {
+  opacity: 1;
+}
+
+/* Animated conic border that lights up on hover */
+.border-glow {
+  position: relative;
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 60%,
+    #FF5A1F,
+    transparent 85%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.border-glow:hover::before {
+  opacity: 1;
+  animation: rotate-angle 3s linear infinite;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-angle {
+  to { --angle: 360deg; }
+}
+
+/* ============================================
+   HERO DEPTH FIELD
+   ============================================ */
+
+/* Layers drift opposite the cursor — --px/--py are set by Hero's mousemove */
+.depth-layer {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.depth-near  { transform: translate3d(calc(var(--px, 0) * 26px), calc(var(--py, 0) * 26px), 0); }
+.depth-mid   { transform: translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px), 0); }
+.depth-far   { transform: translate3d(calc(var(--px, 0) * -8px), calc(var(--py, 0) * -8px), 0); }
+
+/* Slow-drifting gradient orbs behind the hero */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(28px, -34px) scale(1.08); }
+  66%      { transform: translate(-22px, 20px) scale(0.94); }
+}
+
+.orb-drift { animation: float-orb 16s ease-in-out infinite; }
+
+/* Floating tech chips orbiting the hero portrait */
+@keyframes float-chip {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(2deg); }
+}
+
+.float-chip { animation: float-chip 5s ease-in-out infinite; }
+
+/* ============================================
+   3D FLIP CARD (AI & Automation section)
+   ============================================ */
+
+.flip-scene { perspective: 1400px; }
+
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flip-scene:hover .flip-inner,
+.flip-scene:focus-within .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.flip-back { transform: rotateY(180deg); }
+
+/* ============================================
+   INFINITE TECH MARQUEE
+   ============================================ */
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* ============================================
+   MISC POLISH
+   ============================================ */
+
+/* Top-of-page scroll progress bar */
+.scroll-progress {
+  transform-origin: 0 50%;
+  transition: transform 0.1s linear;
+}
+
+/* Animated gradient text shimmer */
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg, #FF5A1F, #ffb08a, #FF5A1F);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Buttons that lean toward the cursor (see useMagnetic) */
+.magnetic {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ============================================
+   ACCESSIBILITY — honour reduced-motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tilt-3d,
+  .depth-layer,
+  .magnetic {
+    transform: none !important;
+  }
+
+  .flip-scene:hover .flip-inner,
+  .flip-scene:focus-within .flip-inner {
+    transform: none;
+  }
+
+  /* Never leave reveal content stuck at opacity 0 */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

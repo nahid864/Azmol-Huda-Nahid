@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { ArrowRight, Calendar } from 'lucide-react'
+import { BLOG_URL } from '../config'
 
 const posts = [
   {
@@ -36,6 +37,7 @@ const posts = [
 
 export default function Blog() {
   const sectionRef = useRef(null)
+  const published = Boolean(BLOG_URL)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -61,21 +63,35 @@ export default function Blog() {
           <div className="reveal">
             <p className="section-subheading">Insights</p>
             <h2 className="section-heading">
-              Latest <span className="text-gradient">Articles</span>
+              {published ? 'Latest ' : 'Writing '}
+              <span className="text-gradient">Articles</span>
             </h2>
+            {!published && (
+              <p className="text-brand-gray text-sm mt-2 max-w-lg">
+                Topics I'm writing about next — drawn from what actually comes up in client
+                work.
+              </p>
+            )}
           </div>
-          <a
-            href="#"
-            className="reveal text-brand-orange text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all"
-          >
-            View all posts <ArrowRight size={14} />
-          </a>
+          {BLOG_URL && (
+            <a
+              href={BLOG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="reveal text-brand-orange text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all"
+            >
+              View all posts <ArrowRight size={14} />
+            </a>
+          )}
         </div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {posts.map((p) => (
-            <article key={p.id} className="reveal card group cursor-pointer">
+            <article
+              key={p.id}
+              className={`reveal card group ${published ? 'cursor-pointer' : 'cursor-default'}`}
+            >
               {/* Thumbnail placeholder */}
               <div
                 className="w-full h-40 rounded-lg mb-4 flex items-center justify-center text-5xl"
@@ -92,9 +108,15 @@ export default function Blog() {
                 >
                   {p.tag}
                 </span>
-                <span className="text-brand-gray/60 text-xs flex items-center gap-1">
-                  <Calendar size={11} /> {p.date}
-                </span>
+                {published ? (
+                  <span className="text-brand-gray/60 text-xs flex items-center gap-1">
+                    <Calendar size={11} /> {p.date}
+                  </span>
+                ) : (
+                  <span className="text-brand-gray/50 text-[10px] font-semibold uppercase tracking-wider border border-brand-border rounded px-2 py-0.5">
+                    Coming soon
+                  </span>
+                )}
               </div>
 
               <h3 className="text-white font-semibold text-sm sm:text-base mb-2 group-hover:text-brand-orange transition-colors leading-snug">
@@ -102,9 +124,17 @@ export default function Blog() {
               </h3>
               <p className="text-brand-gray text-xs leading-relaxed line-clamp-3">{p.excerpt}</p>
 
-              <button className="mt-4 text-brand-orange text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-                Read more <ArrowRight size={12} />
-              </button>
+              {/* Only offer "Read more" when there is somewhere for it to go */}
+              {published && (
+                <a
+                  href={BLOG_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 text-brand-orange text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+                >
+                  Read more <ArrowRight size={12} />
+                </a>
+              )}
             </article>
           ))}
         </div>

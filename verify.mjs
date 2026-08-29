@@ -26,7 +26,7 @@ await page.waitForTimeout(1000);
 // 1. Page title
 await check('Page title', async () => {
   const t = await page.title();
-  return t.includes('NN Coders') ? `"${t}"` : false;
+  return t.includes('Azmol Huda Nahid') ? `"${t}"` : false;
 });
 
 // 2. Dark background
@@ -54,7 +54,7 @@ await check('Hero photo loads', async () => {
 // 5. Navbar links
 await check('Navbar links', async () => {
   const texts = await page.locator('header nav button, header nav a').allInnerTexts();
-  const expected = ['About', 'Services', 'Portfolio', 'Skills', 'Testimonials', 'Blog', 'Contact'];
+  const expected = ['About', 'Services', 'Portfolio', 'Skills', 'Blog', 'Contact'];
   const found = expected.filter(e => texts.some(t => t.includes(e)));
   return found.length >= 5 ? `Found: ${found.join(', ')}` : false;
 });
@@ -82,25 +82,6 @@ await check('Skill progress bars', async () => {
   const bars = await page.locator('.progress-bar').count();
   return bars >= 5 ? `${bars} progress bars found` : false;
 });
-
-// Scroll to Stats
-await page.evaluate(() => document.getElementById('stats') || window.scrollBy(0, 2000));
-await page.waitForTimeout(1200);
-
-// 9. Stats counters
-await check('Stats animated counters', async () => {
-  // Scroll into stats section via orange banner
-  const orangeBanner = page.locator('.bg-brand-orange').first();
-  if (await orangeBanner.count() > 0) {
-    await orangeBanner.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-  }
-  const texts = await page.locator('.bg-brand-orange span, .bg-brand-orange p').allInnerTexts();
-  return texts.length > 0 ? `Stats texts: ${texts.slice(0, 4).join(' | ')}` : 'orange section found';
-});
-
-// Screenshot stats
-await page.screenshot({ path: `${OUT}/02-stats.png`, fullPage: false });
 
 // 10. Portfolio section
 await check('Portfolio filter buttons', async () => {
@@ -194,7 +175,7 @@ await mobilePage.screenshot({ path: `${OUT}/08-footer.png`, fullPage: false });
 
 await check('Footer copyright', async () => {
   const footer = await mobilePage.locator('footer').innerText();
-  return footer.includes('NN Coders') ? 'Footer has NN Coders branding' : false;
+  return footer.includes('Azmol Huda Nahid') ? 'Footer has Azmol Huda Nahid branding' : false;
 });
 
 await mobileCtx.close();

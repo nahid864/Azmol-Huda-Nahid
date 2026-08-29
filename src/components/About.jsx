@@ -1,16 +1,41 @@
 import { useEffect, useRef } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Rocket } from 'lucide-react'
+import useTilt from '../hooks/useTilt'
+import { CONTACT_EMAIL, MAIL_COMPOSE_URL } from '../config'
 
+/* Levels mirror the skills report: Advanced ≈ 90+, Intermediate ≈ 75–85. */
 const skills = [
-  { label: 'React / JavaScript', pct: 90 },
-  { label: 'WordPress', pct: 90 },
+  { label: 'Laravel / PHP', pct: 92 },
   { label: 'HTML / CSS / Bootstrap', pct: 95 },
-  { label: 'PHP / Python', pct: 80 },
-  { label: 'Node.js / MongoDB', pct: 80 },
+  { label: 'React.js / JavaScript', pct: 90 },
+  { label: 'WordPress / WooCommerce', pct: 90 },
+  { label: 'MySQL / MongoDB', pct: 85 },
+  { label: 'Node.js / Python', pct: 78 },
+]
+
+/* Real skills that don't warrant their own bar but shouldn't be invisible. */
+const alsoUsing = [
+  'Flutter / Dart',
+  'n8n Automation',
+  'Python Scripting',
+  'Git & GitHub',
+  'REST API Integration',
+  'Prompt Engineering',
+  'On-page SEO',
+  'Canva / Figma',
+]
+
+const softSkills = [
+  'Problem Solving',
+  'Clear Communication',
+  'Fast Learner',
+  'Time Management',
+  'Client-Facing',
 ]
 
 const highlights = [
   'B.Sc in CSE — Daffodil International University (2023)',
+  'Full-stack builds in Laravel/PHP & React — e-commerce, POS and admin systems, end to end',
   'Radio Engineer at Taurus International (Sep 2024 – Feb 2025)',
   'Graphic Design Intern — Zenana & 1972 Conscious (Jun–Oct 2025)',
   'English (Full Professional) · Bangla (Native)',
@@ -19,6 +44,7 @@ const highlights = [
 export default function About() {
   const sectionRef = useRef(null)
   const barsRef = useRef([])
+  const photoRef = useTilt({ max: 7, scale: 1.03 })
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,21 +76,31 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left — photo / badge */}
-          <div className="reveal relative">
-            <div className="relative rounded-2xl overflow-hidden max-w-sm mx-auto lg:mx-0">
+          <div className="reveal relative scene">
+            <div
+              ref={photoRef}
+              className="tilt-3d glare relative rounded-2xl overflow-hidden max-w-sm mx-auto lg:mx-0"
+            >
               <img
-                src="/assets/images/hero.jpg"
+                src={`${import.meta.env.BASE_URL}assets/images/about.jpg`}
                 alt="Azmol Huda Nahid"
-                className="w-full object-cover rounded-2xl"
+                className="w-full aspect-[4/5] object-cover object-[50%_18%] rounded-2xl"
+                style={{ filter: 'contrast(1.06) saturate(1.04) brightness(1.03)' }}
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              {/* Cinematic grade — identity untouched, just tone */}
+              <div className="absolute inset-0 rounded-2xl bg-brand-orange/10 mix-blend-overlay pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/70 via-transparent to-black/10 pointer-events-none" />
+              <div
+                className="absolute inset-0 rounded-2xl pointer-events-none"
+                style={{ boxShadow: 'inset 0 0 90px 24px rgba(0,0,0,0.55)' }}
+              />
             </div>
 
             {/* Experience badge */}
-            <div className="absolute top-6 -right-4 lg:-right-8 bg-brand-orange text-white rounded-2xl px-5 py-4 shadow-2xl text-center">
-              <p className="text-3xl font-extrabold leading-none">3+</p>
-              <p className="text-xs font-medium mt-1 opacity-90">Years of<br />Experience</p>
+            <div className="absolute top-6 -right-4 lg:-right-8 bg-brand-orange text-white rounded-2xl px-5 py-4 shadow-2xl text-center float-chip">
+              <p className="text-3xl font-extrabold leading-none">2023</p>
+              <p className="text-xs font-medium mt-1 opacity-90">Building<br />since</p>
             </div>
 
             {/* Card at bottom */}
@@ -91,16 +127,22 @@ export default function About() {
 
             <div className="reveal space-y-4 text-brand-gray text-sm sm:text-base leading-relaxed">
               <p>
-                Hi, I'm <strong className="text-white">Azmol Huda Nahid</strong> — a full-stack web developer
-                and founder of <strong className="text-brand-orange">NN Coders</strong>. I specialise in
-                building modern, high-performance websites and web applications that genuinely
-                help businesses grow.
+                Hi, I'm <strong className="text-white">Azmol Huda Nahid</strong> — a full-stack web developer.
+                My strongest work is in <strong className="text-brand-orange">Laravel/PHP</strong> and{' '}
+                <strong className="text-brand-orange">React</strong>, backed by real shipped products:
+                an e-commerce platform and a full POS system, both built end-to-end.
+              </p>
+              <p>
+                Alongside the web work I build <strong className="text-brand-orange">AI automation</strong>{' '}
+                — Python scripts and n8n flows that take repetitive tasks off a team's plate — and
+                cross-platform mobile apps with <strong className="text-brand-orange">Flutter</strong>.
+                Web and AI automation are my main focus.
               </p>
               <p>
                 I'm energetic, detail-oriented, and I love turning complex problems into clean,
-                elegant code. Whether it's a blazing-fast React app, a powerful WordPress site,
-                or a robust Laravel back-end — I bring the same level of craft and commitment
-                to every project.
+                elegant code. I've spent the last two years building real, production-style
+                projects on my own — so I understand what it takes to actually finish and ship
+                something, not just start it.
               </p>
             </div>
 
@@ -134,6 +176,60 @@ export default function About() {
               ))}
             </div>
 
+            {/* Secondary skills */}
+            <div className="reveal space-y-3">
+              <h3 className="text-white font-semibold text-sm uppercase tracking-wider">
+                Also Working With
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {alsoUsing.map((t) => (
+                  <span
+                    key={t}
+                    className="text-xs font-medium text-brand-gray bg-brand-card border border-brand-border rounded-lg px-3 py-1.5 hover:border-brand-orange/50 hover:text-brand-orange transition-colors"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Soft skills */}
+            <div className="reveal space-y-3">
+              <h3 className="text-white font-semibold text-sm uppercase tracking-wider">
+                How I Work
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {softSkills.map((t) => (
+                  <span
+                    key={t}
+                    className="text-xs font-medium text-brand-orange bg-brand-orange/10 border border-brand-orange/25 rounded-lg px-3 py-1.5"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Currently learning — honest framing, not an overclaim */}
+            <div className="reveal bg-brand-card border border-brand-border rounded-xl p-5 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-brand-orange/15 text-brand-orange flex items-center justify-center shrink-0">
+                <Rocket size={18} />
+              </div>
+              <div>
+                <p className="text-white text-sm font-semibold mb-1">
+                  Currently Levelling Up
+                  <span className="ml-2 text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/40 px-2 py-0.5 rounded">
+                    IN PROGRESS
+                  </span>
+                </p>
+                <p className="text-brand-gray text-xs leading-relaxed">
+                  Deeper <strong className="text-brand-gray">AI automation</strong> pipelines and
+                  multi-step agent workflows. I list this as an active learning goal — not a
+                  finished skill.
+                </p>
+              </div>
+            </div>
+
             {/* CTA row */}
             <div className="reveal flex flex-wrap gap-4 pt-2">
               <button
@@ -143,10 +239,12 @@ export default function About() {
                 Hire Me Now
               </button>
               <a
-                href="mailto:azmolhuda777@gmail.com"
+                href={MAIL_COMPOSE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-outline text-sm"
               >
-                azmolhuda777@gmail.com
+                {CONTACT_EMAIL}
               </a>
             </div>
           </div>

@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { Mail, Phone, MapPin, Github, Linkedin, Send, CheckCircle2 } from 'lucide-react'
+import { Mail, Phone, MapPin, Github, Linkedin, Send, CheckCircle2, AlertCircle } from 'lucide-react'
+import { CONTACT_EMAIL, MAIL_COMPOSE_URL, GITHUB_URL, LINKEDIN_URL } from '../config'
+
+/**
+ * Posts submissions to a real inbox (Formspree, tied to azmolhudanahid@gmail.com).
+ * The hard-coded fallback keeps the form working on the deployed site, where
+ * .env is gitignored and never reaches the CI build — the endpoint is public by
+ * design, so it's safe to ship. Override it via VITE_FORM_ENDPOINT in .env.
+ * If a POST ever fails, the form falls back to the visitor's mail client.
+ */
+const FORM_ENDPOINT =
+  import.meta.env.VITE_FORM_ENDPOINT || 'https://formspree.io/f/xnpqqwjb'
 
 export default function Contact() {
   const sectionRef = useRef(null)
@@ -7,6 +18,7 @@ export default function Contact() {
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState('')
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -35,7 +47,17 @@ export default function Contact() {
     return e
   }
 
-  const handleSubmit = (e) => {
+  // Opens Gmail's web compose in a new tab with the fields pre-filled — works
+  // even when the visitor has no mailto: handler wired up.
+  const openMailClient = () => {
+    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
+    const url = `${MAIL_COMPOSE_URL}&su=${encodeURIComponent(
+      form.subject
+    )}&body=${encodeURIComponent(body)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) {
@@ -43,43 +65,88 @@ export default function Contact() {
       return
     }
     setErrors({})
+    setSendError('')
     setSending(true)
-    setTimeout(() => {
+
+    // No endpoint configured yet → fall back to the visitor's mail client so
+    // the message still reaches a real inbox instead of vanishing.
+    if (!FORM_ENDPOINT) {
+      openMailClient()
       setSending(false)
       setSent(true)
       setForm({ name: '', email: '', subject: '', message: '' })
-    }, 1500)
+      return
+    }
+
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+          _replyto: form.email,
+        }),
+      })
+
+      if (!res.ok) throw new Error(`Form service returned ${res.status}`)
+
+      setSent(true)
+      setForm({ name: '', email: '', subject: '', message: '' })
+    } catch (err) {
+      // Never silently swallow it — tell the visitor and give them a way out.
+      setSendError(
+        "Couldn't send through the form. Click below to email me directly instead."
+      )
+    } finally {
+      setSending(false)
+    }
   }
 
-  const field = (key, label, type = 'text', rows) => (
-    <div>
-      <label className="text-brand-gray text-xs font-medium block mb-1.5">
-        {label} <span className="text-brand-orange">*</span>
-      </label>
-      {rows ? (
-        <textarea
-          rows={rows}
-          value={form[key]}
-          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-          placeholder={`Your ${label.toLowerCase()}…`}
-          className={`w-full bg-brand-bg border rounded-lg px-4 py-3 text-white text-sm placeholder-brand-gray/40 outline-none focus:border-brand-orange transition-colors resize-none ${
-            errors[key] ? 'border-red-500' : 'border-brand-border'
-          }`}
-        />
-      ) : (
-        <input
-          type={type}
-          value={form[key]}
-          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-          placeholder={`Your ${label.toLowerCase()}…`}
-          className={`w-full bg-brand-bg border rounded-lg px-4 py-3 text-white text-sm placeholder-brand-gray/40 outline-none focus:border-brand-orange transition-colors ${
-            errors[key] ? 'border-red-500' : 'border-brand-border'
-          }`}
-        />
-      )}
-      {errors[key] && <p className="text-red-400 text-xs mt-1">{errors[key]}</p>}
-    </div>
-  )
+  const field = (key, label, type = 'text', rows) => {
+    const id = `contact-${key}`
+    const errorId = `${id}-error`
+    const hasError = Boolean(errors[key])
+
+    // Shared wiring so assistive tech gets the label, the required state and
+    // the error message — not just a styled box.
+    const common = {
+      id,
+      value: form[key],
+      onChange: (e) => setForm({ ...form, [key]: e.target.value }),
+      placeholder: `Your ${label.toLowerCase()}…`,
+      required: true,
+      'aria-required': true,
+      'aria-invalid': hasError,
+      'aria-describedby': hasError ? errorId : undefined,
+      className: `w-full bg-brand-bg border rounded-lg px-4 py-3 text-white text-sm placeholder-brand-gray/40 outline-none focus:border-brand-orange focus-visible:ring-2 focus-visible:ring-brand-orange/40 transition-colors ${
+        hasError ? 'border-red-500' : 'border-brand-border'
+      }`,
+    }
+
+    return (
+      <div>
+        <label htmlFor={id} className="text-brand-gray text-xs font-medium block mb-1.5">
+          {label}{' '}
+          <span className="text-brand-orange" aria-hidden="true">
+            *
+          </span>
+        </label>
+        {rows ? (
+          <textarea rows={rows} {...common} className={`${common.className} resize-none`} />
+        ) : (
+          <input type={type} {...common} />
+        )}
+        {hasError && (
+          <p id={errorId} role="alert" className="text-red-400 text-xs mt-1">
+            {errors[key]}
+          </p>
+        )}
+      </div>
+    )
+  }
 
   return (
     <section id="contact" ref={sectionRef} className="py-20 md:py-28 bg-brand-bg">
@@ -100,10 +167,10 @@ export default function Contact() {
           <div className="space-y-6">
             <div className="reveal space-y-4">
               {[
-                { icon: <Mail size={18} />, label: 'Email', value: 'azmolhuda777@gmail.com', href: 'mailto:azmolhuda777@gmail.com' },
+                { icon: <Mail size={18} />, label: 'Email', value: CONTACT_EMAIL, href: MAIL_COMPOSE_URL, external: true },
                 { icon: <Phone size={18} />, label: 'Phone', value: '+880 1757-853828', href: 'tel:+8801757853828' },
                 { icon: <MapPin size={18} />, label: 'Location', value: 'Dhaka, Bangladesh', href: null },
-              ].map(({ icon, label, value, href }) => (
+              ].map(({ icon, label, value, href, external }) => (
                 <div key={label} className="flex items-center gap-4 bg-brand-card border border-brand-border rounded-xl px-5 py-4 hover:border-brand-orange/40 transition">
                   <div className="w-10 h-10 bg-brand-orange/15 rounded-lg flex items-center justify-center text-brand-orange shrink-0">
                     {icon}
@@ -111,7 +178,11 @@ export default function Contact() {
                   <div>
                     <p className="text-brand-gray text-xs">{label}</p>
                     {href ? (
-                      <a href={href} className="text-white text-sm font-medium hover:text-brand-orange transition">
+                      <a
+                        href={href}
+                        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        className="text-white text-sm font-medium hover:text-brand-orange transition"
+                      >
                         {value}
                       </a>
                     ) : (
@@ -125,7 +196,7 @@ export default function Contact() {
             {/* Socials */}
             <div className="reveal flex gap-3">
               <a
-                href="https://github.com/nahid864"
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-gray hover:text-brand-orange hover:border-brand-orange transition text-sm font-medium"
@@ -134,7 +205,7 @@ export default function Contact() {
                 <Github size={16} /> GitHub
               </a>
               <a
-                href="https://www.linkedin.com/in/azmol-huda-nahid-abb4621ba/"
+                href={LINKEDIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-brand-card border border-brand-border rounded-xl px-4 py-3 text-brand-gray hover:text-brand-orange hover:border-brand-orange transition text-sm font-medium"
@@ -180,6 +251,25 @@ export default function Contact() {
                 </div>
                 {field('subject', 'Subject')}
                 {field('message', 'Message', 'text', 5)}
+
+                {sendError && (
+                  <div
+                    role="alert"
+                    className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/30 rounded-lg p-3"
+                  >
+                    <AlertCircle size={16} className="text-red-400 mt-0.5 shrink-0" />
+                    <div className="space-y-2">
+                      <p className="text-red-300 text-xs leading-relaxed">{sendError}</p>
+                      <button
+                        type="button"
+                        onClick={openMailClient}
+                        className="text-brand-orange text-xs font-semibold underline underline-offset-2 hover:text-white transition-colors"
+                      >
+                        Email me directly →
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <button
                   type="submit"

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Download } from 'lucide-react'
+import { RESUME_URL } from '../config'
 
-const links = ['About', 'Services', 'Portfolio', 'Skills', 'Testimonials', 'Blog', 'Contact']
+const links = ['About', 'Services', 'AI', 'Portfolio', 'Skills', 'Contact']
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -28,10 +29,9 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
-        <button onClick={() => scrollTo('hero')} className="flex items-center gap-1 text-xl md:text-2xl font-bold tracking-tight">
-          <span className="text-white">N</span>
-          <span className="text-brand-orange">N</span>
-          <span className="text-white"> Coders</span>
+        <button onClick={() => scrollTo('hero')} className="flex items-center text-xl md:text-2xl font-bold tracking-tight">
+          <span className="text-white">Nahid</span>
+          <span className="text-brand-orange">.</span>
         </button>
 
         {/* Desktop links */}
@@ -51,7 +51,16 @@ export default function Navbar() {
         </ul>
 
         {/* CTA */}
-        <div className="hidden lg:flex">
+        <div className="hidden lg:flex items-center gap-3">
+          {RESUME_URL && (
+            <a
+              href={RESUME_URL}
+              download
+              className="flex items-center gap-1.5 text-brand-gray hover:text-brand-orange text-sm font-medium transition-colors"
+            >
+              <Download size={15} /> CV
+            </a>
+          )}
           <button onClick={() => scrollTo('Contact')} className="btn-primary text-sm">
             Hire Me
           </button>

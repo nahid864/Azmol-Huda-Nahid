@@ -4,3 +4,8 @@ dev-server.log
 *.local
 .env
 .env.*
+!.env.example
+
+# Editor / assistant tooling (local only)
+.claude/
+.serena/

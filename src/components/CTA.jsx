@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Rocket } from 'lucide-react'
+import { CONTACT_EMAIL, MAIL_COMPOSE_URL } from '../config'
 
 export default function CTA() {
   const ref = useRef(null)
@@ -52,10 +53,12 @@ export default function CTA() {
               Hire Me Now
             </button>
             <a
-              href="mailto:azmolhuda777@gmail.com"
+              href={MAIL_COMPOSE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-outline text-base px-8 py-4"
             >
-              azmolhuda777@gmail.com
+              {CONTACT_EMAIL}
             </a>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import TiltCard from './TiltCard'
 
 const services = [
   {
@@ -12,6 +13,11 @@ const services = [
     desc: 'Blazing-fast, interactive SPAs and component-driven UIs built with React.',
   },
   {
+    icon: '📱',
+    title: 'Flutter Cross-Platform Apps',
+    desc: 'Single-codebase Android & iOS apps with Flutter & Dart, wired to REST APIs.',
+  },
+  {
     icon: '🖥️',
     title: 'Laravel / PHP Backend Development',
     desc: 'Scalable REST APIs, admin panels and database-driven apps with Laravel & PHP.',
@@ -23,8 +29,8 @@ const services = [
   },
   {
     icon: '🤖',
-    title: 'Social Media Automation',
-    desc: 'Automated scheduling, engagement tools and workflow scripts for social platforms.',
+    title: 'AI & Workflow Automation',
+    desc: 'AI-powered pipelines, social scheduling and scripts that remove repetitive manual work.',
   },
   {
     icon: '📣',
@@ -82,17 +88,20 @@ export default function Services() {
         {/* Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {services.map((s) => (
-            <div
-              key={s.title}
-              className="reveal card group cursor-default"
-            >
-              <div className="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 w-12 h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center">
-                {s.icon}
-              </div>
-              <h3 className="text-white font-semibold text-base mb-2 group-hover:text-brand-orange transition-colors">
-                {s.title}
-              </h3>
-              <p className="text-brand-gray text-xs leading-relaxed">{s.desc}</p>
+            <div key={s.title} className="reveal scene">
+              <TiltCard
+                max={10}
+                scale={1.03}
+                className="card border-glow group cursor-default h-full"
+              >
+                <div className="layer-2 text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 w-12 h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center">
+                  {s.icon}
+                </div>
+                <h3 className="layer-1 text-white font-semibold text-base mb-2 group-hover:text-brand-orange transition-colors">
+                  {s.title}
+                </h3>
+                <p className="text-brand-gray text-xs leading-relaxed">{s.desc}</p>
+              </TiltCard>
             </div>
           ))}
         </div>
