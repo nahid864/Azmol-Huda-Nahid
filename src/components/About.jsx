@@ -84,8 +84,13 @@ export default function About() {
               <img
                 src={`${import.meta.env.BASE_URL}assets/images/about.jpg`}
                 alt="Azmol Huda Nahid"
-                className="w-full aspect-[4/5] object-cover object-[50%_32%] rounded-2xl"
-                style={{ filter: 'contrast(1.04) saturate(1.03)' }}
+                className="w-full aspect-[4/5] object-cover rounded-2xl"
+                style={{
+                  filter: 'contrast(1.04) saturate(1.03)',
+                  objectPosition: '47% 55%',
+                  transform: 'scale(2)',
+                  transformOrigin: '47% 55%',
+                }}
                 loading="lazy"
               />
               {/* Light grade — anchor the bottom for the badge, keep the photo bright */}
