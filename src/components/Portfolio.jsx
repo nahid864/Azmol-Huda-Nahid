@@ -150,6 +150,29 @@ const projects = [
     github: 'https://github.com/nahid864',
     live: '#',
   },
+  {
+    id: 8,
+    title: 'Beanova',
+    category: 'Front-end',
+    emoji: '☕',
+    accent: '#C8964F',
+    tech: ['HTML5', 'CSS3', 'JavaScript', 'ffmpeg'],
+    problem:
+      'I wanted to see how far a single hand-coded page could go with AI-generated media doing all the visual work — a cinematic, scroll-driven story for a coffee shop that still holds up with no JavaScript and no video support.',
+    solution:
+      'Built a one-page site in plain HTML, CSS and vanilla JS — one folder, no framework, no build step. A single AI-generated hero video (Kling v3.0) scrubs forward and rewinds with the scroll via a blob fetch and an eased rAF loop; section stills came from Soul 2, all processed with ffmpeg. A four-layer legibility system keeps captions readable over the footage, and five accessibility gates swap in a designed still image on phones and for reduced-motion visitors.',
+    result:
+      'A complete, cinematic coffee-shop site that stays fully functional even if the video never loads. Verified with a headless-Chrome self-test covering scrub tracking, caption timing, the press-and-hold interaction, the no-video fallback, reduced motion both directions, phone widths and a zero-console-error pass. ~28.5 AI-media credits total; deploys as static files to any host.',
+    role: 'Solo Front-end Developer',
+    features: [
+      'Scroll-scrubbed AI hero video (forward + rewind)',
+      'Press-and-hold "pour your own cup" reveal',
+      'Four-layer caption legibility system',
+      'Reduced-motion & mobile still-image fallbacks',
+    ],
+    github: 'https://github.com/nahid864/Beanova',
+    live: 'https://nahid864.github.io/Beanova/',
+  },
 ]
 
 const filters = ['All', 'Full-stack', 'Laravel', 'Front-end']
@@ -242,6 +265,7 @@ export default function Portfolio() {
   const [active, setActive] = useState('All')
   const [modal, setModal] = useState(null)
   const closeBtnRef = useRef(null)
+  const firstFilterRun = useRef(true)
 
   const filtered = active === 'All' ? projects : projects.filter((p) => p.category === active)
 
@@ -262,6 +286,22 @@ export default function Portfolio() {
     if (sectionRef.current) observer.observe(sectionRef.current)
     return () => observer.disconnect()
   }, [])
+
+  /* The observer above fires once and disconnects. Cards that a filter change
+     remounts would otherwise stay stuck at opacity:0, so re-run the reveal on
+     the grid whenever the active filter changes (skipping the initial mount,
+     which the observer already handles on scroll-in). */
+  useEffect(() => {
+    if (firstFilterRun.current) {
+      firstFilterRun.current = false
+      return
+    }
+    const cards = sectionRef.current?.querySelectorAll('.portfolio-grid .reveal')
+    cards?.forEach((el, i) => {
+      el.classList.remove('visible')
+      setTimeout(() => el.classList.add('visible'), i * 60)
+    })
+  }, [active])
 
   /* Modal behaviour: lock scroll, close on Escape, and hand focus to the
      dialog then give it back to whatever opened it. */
@@ -317,7 +357,7 @@ export default function Portfolio() {
         </div>
 
         {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="portfolio-grid grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {filtered.map((p) => (
             <div
               key={p.id}
