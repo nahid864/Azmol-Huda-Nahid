@@ -84,16 +84,15 @@ export default function About() {
               <img
                 src={`${import.meta.env.BASE_URL}assets/images/about.jpg`}
                 alt="Azmol Huda Nahid"
-                className="w-full aspect-[4/5] object-cover object-[50%_18%] rounded-2xl"
-                style={{ filter: 'contrast(1.06) saturate(1.04) brightness(1.03)' }}
+                className="w-full aspect-[4/5] object-cover object-[50%_32%] rounded-2xl"
+                style={{ filter: 'contrast(1.04) saturate(1.03)' }}
                 loading="lazy"
               />
-              {/* Cinematic grade — identity untouched, just tone */}
-              <div className="absolute inset-0 rounded-2xl bg-brand-orange/10 mix-blend-overlay pointer-events-none" />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/70 via-transparent to-black/10 pointer-events-none" />
+              {/* Light grade — anchor the bottom for the badge, keep the photo bright */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
               <div
                 className="absolute inset-0 rounded-2xl pointer-events-none"
-                style={{ boxShadow: 'inset 0 0 90px 24px rgba(0,0,0,0.55)' }}
+                style={{ boxShadow: 'inset 0 0 70px 12px rgba(0,0,0,0.26)' }}
               />
             </div>
 

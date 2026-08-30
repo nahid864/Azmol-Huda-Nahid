@@ -103,6 +103,7 @@ const projects = [
     ],
     github: 'https://github.com/nahid864',
     live: '#',
+    status: 'building',
   },
   {
     id: 6,
@@ -381,6 +382,13 @@ export default function Portfolio() {
                   tech={p.tech}
                   accent={p.accent}
                 />
+                {/* Status ribbon — actively-in-development projects */}
+                {p.status === 'building' && (
+                  <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 bg-brand-bg/90 border border-brand-orange/40 text-brand-orange text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 backdrop-blur-sm">
+                    <span className="w-1.5 h-1.5 bg-brand-orange rounded-full animate-pulse" />
+                    In development
+                  </span>
+                )}
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-brand-orange/85 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2 rounded-xl">
                   <div className="bg-white/20 rounded-full p-3">
@@ -534,6 +542,11 @@ export default function Portfolio() {
                   >
                     <ExternalLink size={14} /> Live Demo
                   </a>
+                ) : modal.status === 'building' ? (
+                  <span className="text-brand-orange text-xs flex items-center gap-2 px-4 py-3">
+                    <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
+                    In active development — launching soon
+                  </span>
                 ) : (
                   <span className="text-brand-gray/50 text-xs flex items-center gap-2 px-4 py-3">
                     <Lock size={13} /> Local build — not deployed yet
