@@ -174,9 +174,33 @@ const projects = [
     github: 'https://github.com/nahid864/Beanova',
     live: 'https://nahid864.github.io/Beanova/',
   },
+  {
+    id: 9,
+    title: 'Nui-Gent',
+    category: 'AI',
+    emoji: '🤖',
+    accent: '#6FB4FF',
+    tech: ['Python', 'n8n', 'AI APIs', 'Meta API'],
+    problem:
+      'I wanted a real, running example of AI automation — not a demo — that handles repetitive business work end to end instead of a person doing it by hand.',
+    solution:
+      'Built a multi-agent automation platform: agents that chain AI APIs with Python and n8n flows, wired to Meta APIs, running on scheduled and event triggers. Each agent owns a task and the system routes work between them.',
+    result:
+      'A live platform at agent.nuigent.xyz running automation work on its own. The interface is still being polished; the pipeline behind it runs.',
+    role: 'Solo Developer',
+    features: [
+      'Multi-agent task routing',
+      'AI API + Python + n8n pipelines',
+      'Meta API integrations',
+      'Scheduled and event-triggered runs',
+    ],
+    github: 'https://github.com/nahid864',
+    live: 'https://agent.nuigent.xyz/',
+    status: 'building',
+  },
 ]
 
-const filters = ['All', 'Full-stack', 'Laravel', 'Front-end']
+const filters = ['All', 'Full-stack', 'Laravel', 'Front-end', 'AI']
 
 /**
  * Designed fallback for projects with no screenshot on file. Deliberately
@@ -386,7 +410,7 @@ export default function Portfolio() {
                 {p.status === 'building' && (
                   <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 bg-brand-bg/90 border border-brand-orange/40 text-brand-orange text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 backdrop-blur-sm">
                     <span className="w-1.5 h-1.5 bg-brand-orange rounded-full animate-pulse" />
-                    In development
+                    {p.live && p.live !== '#' ? 'Live · in progress' : 'In development'}
                   </span>
                 )}
                 {/* Hover overlay */}
@@ -534,14 +558,22 @@ export default function Portfolio() {
                   <Github size={14} /> GitHub
                 </a>
                 {modal.live && modal.live !== '#' ? (
-                  <a
-                    href={modal.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary text-xs flex items-center gap-2"
-                  >
-                    <ExternalLink size={14} /> Live Demo
-                  </a>
+                  <>
+                    <a
+                      href={modal.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary text-xs flex items-center gap-2"
+                    >
+                      <ExternalLink size={14} /> Live Demo
+                    </a>
+                    {modal.status === 'building' && (
+                      <span className="text-brand-orange/80 text-xs flex items-center gap-2 px-2 py-3">
+                        <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
+                        interface still in progress
+                      </span>
+                    )}
+                  </>
                 ) : modal.status === 'building' ? (
                   <span className="text-brand-orange text-xs flex items-center gap-2 px-4 py-3">
                     <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
