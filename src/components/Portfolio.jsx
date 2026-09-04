@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { X, ExternalLink, Github, CheckCircle2, Lock } from 'lucide-react'
+import { X, ExternalLink, Github, CheckCircle2, Lock, ChevronDown } from 'lucide-react'
 import TiltCard from './TiltCard'
 
 const IMG_BASE = import.meta.env.BASE_URL + 'assets/images/'
@@ -42,6 +42,7 @@ const projects = [
     ],
     github: 'https://github.com/nahid864',
     live: 'https://nahid864.github.io/tinyone',
+    era: 'earlier',
   },
   {
     id: 3,
@@ -61,6 +62,7 @@ const projects = [
     ],
     github: 'https://github.com/nahid864',
     live: 'https://nahid864.github.io/E-school',
+    era: 'earlier',
   },
   {
     id: 4,
@@ -80,6 +82,7 @@ const projects = [
     ],
     github: 'https://github.com/nahid864',
     live: 'https://nahid864.github.io/Minimo',
+    era: 'earlier',
   },
   {
     id: 5,
@@ -87,23 +90,24 @@ const projects = [
     category: 'Full-stack',
     emoji: '🛒',
     accent: '#FF5A1F',
-    tech: ['Laravel', 'PHP', 'MySQL', 'Blade'],
+    tech: ['Laravel', 'Tailwind', 'Alpine.js', 'MySQL'],
     problem:
-      'I wanted to build a complete online store end to end — not just a catalogue, but real checkout, order tracking and a back office that staff could actually run day to day.',
+      'My own EDC shop was running on a site derived from a licensed third-party commercial codebase — which meant I could not safely change it, and it was quietly losing money. A product with 1 unit in stock could be ordered five times over, and no delivery status had ever reached the system.',
     solution:
-      'Built the full e-commerce platform end-to-end in Laravel: product catalog, cart, checkout flow, order management and an admin dashboard for staff to manage stock and fulfilment.',
+      'Rebuilt the entire store clean-room on Laravel — new schema, new models, new admin, new storefront, no third-party lineage — carrying across only the shop\'s own business data. Then I hunted the bugs the old system had been hiding: overselling (nothing checked stock in the cart or at checkout), the Steadfast courier webhook (it sat behind CSRF and every callback was refused with a 419, so no delivery status ever arrived), the chosen product colour being dropped between cart and order (nobody packing a parcel could tell which version was bought), and deactivated accounts still being able to sign in and order.',
     result:
-      'A production e-commerce system handling the complete customer journey from browsing to order fulfilment, with staff managing everything from one dashboard.',
-    role: 'Solo Full-Stack Developer',
+      'Checkout now takes stock with a conditional decrement, so two shoppers racing for the last unit cannot both win — the loser\'s order rolls back rather than half-creating. The courier webhook authenticates with a secret compared using hash_equals and delivery statuses arrive, backed by an hourly sync. Colour is stored on the order item. Guest checkout with phone-OTP verification, cart-lead capture for abandoned carts, coupons, and CSV/PDF reporting all shipped. Built and running locally; public cutover still pending.',
+    role: 'Solo Full-Stack Developer — my own business',
     features: [
-      'Product catalog & search',
-      'Shopping cart & checkout flow',
-      'Order management & fulfilment',
-      'Staff admin dashboard',
+      'Clean-room rebuild — verified by a provenance-audit command',
+      'Race-safe stock: conditional decrement, order rolls back',
+      'Steadfast courier: webhook + hourly status sync',
+      'Guest checkout with phone-OTP verification',
+      'Cart-lead capture — abandoned carts stay followable',
+      'Admin: orders, inventory, coupons, CSV/PDF reports',
     ],
-    github: 'https://github.com/nahid864',
     live: '#',
-    status: 'building',
+    status: 'built',
   },
   {
     id: 6,
@@ -200,6 +204,57 @@ const projects = [
     live: 'https://agent.nuigent.xyz/',
     status: 'building',
   },
+  {
+    id: 10,
+    title: 'Savoria',
+    category: 'Laravel',
+    emoji: '🍽️',
+    accent: '#E4B363',
+    tech: ['Laravel 10', 'MySQL', 'Blade', 'Multi-tenant'],
+    problem:
+      'Restaurant software is usually sold one install per restaurant, and the tenant boundary is whatever each query remembers to add. I wanted one platform that hosts many restaurants where a scoping mistake is structurally hard to make — and where the people using it only see what their job needs.',
+    solution:
+      'Built a multi-restaurant SaaS platform on Laravel. Every operational row carries a restaurant_id; reads are narrowed by a global scope and writes stamped automatically, so a model opts into scoping once at the top of the class instead of every query remembering. The tenant is resolved exactly once per request — from a URL slug, the signed-in person\'s own restaurant, or the restaurant a super admin has entered — and nothing else sets it. Identity and credentials are deliberately split across two tables, so a staff record outlives its login and nothing reading a profile can leak a password hash.',
+    result:
+      'A working platform covering point of sale, till shifts with counted-drawer variance, a live floor plan, kitchen display, reservations and a walk-in queue, inventory with an append-only stock ledger, recipe costing, and a public storefront per restaurant. Five fixed roles enforced three times over — route middleware, deny-by-default gates, and in the views — with a smoke test that enumerates the router itself and walks every GET route as every role, so a route added next month is covered the day it is added. Tests run against MySQL rather than SQLite, because the stock ledger depends on SELECT ... FOR UPDATE. Not deployed publicly.',
+    role: 'Solo Full-Stack Developer',
+    features: [
+      'Multi-tenant: global scope + auto-stamped restaurant_id',
+      'POS, till shifts, live floor plan, kitchen display',
+      'Append-only stock ledger with recipe costing',
+      'Role smoke test walks every route as every role',
+      'Managers see the till but never the day\'s totals',
+      'Cooks never see a price',
+    ],
+    github: 'https://github.com/nahid864/restaurant-management-system',
+    live: '#',
+    status: 'built',
+  },
+  {
+    id: 11,
+    title: 'MediCore',
+    category: 'Laravel',
+    emoji: '🏥',
+    accent: '#4FA3C8',
+    tech: ['Laravel 10', 'MySQL', 'Blade', 'AdminLTE'],
+    problem:
+      'Pharmacy stock is not a number — it is a set of batches with different expiry dates, and treating it as a number is how expired medicine reaches a patient. A hospital also needs one bill per patient across the pharmacy counter, the consultation desk and the ward, not three separate debts nobody can reconcile.',
+    solution:
+      'Built a hospital platform on Laravel 10 around four decisions: stock is a batch rather than a number, with expiry-ordered (FEFO) picking; bed occupancy and appointment slots are settled by the database rather than by application checks; a business runs only the features it ticked, so a single pharmacy shop and a full hospital use the same install; and a patient balance is read from the ledger rather than stored, so it cannot drift. All business logic lives in services — controllers only validate and delegate.',
+    result:
+      'Three working halves joined by prescriptions and a shared stock ledger: a pharmacy with real batch and expiry control, doctor appointments with live slot grids and a queue board, and inpatient wards with a bed board, drug chart and a running bill. One balance per patient across consultations, pharmacy credit and ward charges, settled by a single payment split over several debts. Gapless, lock-based invoice and MRN numbering. AdminLTE and its dependencies are served from the app itself, so a hospital on an unreliable line still gets a styled interface. Not deployed publicly.',
+    role: 'Solo Full-Stack Developer',
+    features: [
+      'Batch + expiry stock with FEFO allocation',
+      'One patient balance across pharmacy, OPD and wards',
+      'Inpatient wards: bed board, drug chart, running bill',
+      'Feature switches — a pharmacy and a hospital, one install',
+      'Gapless lock-based invoice / MRN numbering',
+      'Runs fully offline-styled: no CDN dependency',
+    ],
+    live: '#',
+    status: 'built',
+  },
 ]
 
 const filters = ['All', 'Full-stack', 'Laravel', 'Front-end', 'AI']
@@ -248,7 +303,25 @@ function ProjectPoster({ title, emoji, tech = [], accent }) {
   )
 }
 
-function BrowserMockup({ image, title, emoji = '💻', tech, accent = '#FF5A1F' }) {
+/**
+ * The address shown in the mockup's URL bar. It used to print a made-up
+ * `azmolnahid.dev/...` for every project — a domain that does not resolve,
+ * which reads as a dead portfolio. Now it shows the real address when a
+ * project actually has one, and a plain project label when it does not.
+ */
+function addressLabel(live, title) {
+  if (live && live !== '#') {
+    try {
+      const u = new URL(live)
+      return (u.host + u.pathname).replace(/\/$/, '')
+    } catch {
+      return live
+    }
+  }
+  return title.toLowerCase().replace(/\s+/g, '-')
+}
+
+function BrowserMockup({ image, title, emoji = '💻', tech, accent = '#FF5A1F', live }) {
   // Falling back in state (rather than poking at sibling nodes) keeps React as
   // the single source of truth for what's on screen.
   const [imgFailed, setImgFailed] = useState(false)
@@ -264,7 +337,7 @@ function BrowserMockup({ image, title, emoji = '💻', tech, accent = '#FF5A1F' 
           <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
         </div>
         <div className="flex-1 mx-3 bg-[#2a2a2a] rounded-md px-3 py-1 text-[10px] text-brand-gray truncate">
-          azmolnahid.dev/{title.toLowerCase().replace(/\s/g, '-')}
+          {addressLabel(live, title)}
         </div>
       </div>
       {/* Screenshot area */}
@@ -287,6 +360,92 @@ function BrowserMockup({ image, title, emoji = '💻', tech, accent = '#FF5A1F' 
   )
 }
 
+/**
+ * The ribbon in the corner of a card. Three honest states:
+ *   building — actively being worked on right now
+ *   built    — finished and working, but not deployed for the public
+ *   (none)   — nothing to say
+ */
+function StatusRibbon({ status, live }) {
+  if (status !== 'building' && status !== 'built') return null
+
+  const isLive = live && live !== '#'
+  const label =
+    status === 'building'
+      ? isLive
+        ? 'Live · in progress'
+        : 'In development'
+      : isLive
+        ? 'Live'
+        : 'Built · not yet deployed'
+
+  const tone =
+    status === 'building'
+      ? 'border-brand-orange/40 text-brand-orange'
+      : 'border-emerald-400/40 text-emerald-300'
+
+  return (
+    <span
+      className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 bg-brand-bg/90 border ${tone} text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 backdrop-blur-sm`}
+    >
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          status === 'building' ? 'bg-brand-orange animate-pulse' : 'bg-emerald-400'
+        }`}
+      />
+      {label}
+    </span>
+  )
+}
+
+function ProjectCard({ p, onOpen }) {
+  return (
+    <div
+      className="reveal group cursor-pointer scene rounded-xl"
+      onClick={() => onOpen(p)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen(p)
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View case study for ${p.title}`}
+    >
+      <TiltCard max={6} scale={1.015} className="relative overflow-hidden rounded-xl">
+        <BrowserMockup
+          image={p.image}
+          title={p.title}
+          emoji={p.emoji}
+          tech={p.tech}
+          accent={p.accent}
+          live={p.live}
+        />
+        <StatusRibbon status={p.status} live={p.live} />
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-brand-orange/85 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2 rounded-xl">
+          <div className="bg-white/20 rounded-full p-3">
+            <ExternalLink className="text-white" size={22} />
+          </div>
+          <p className="text-white font-semibold text-sm">View Details</p>
+        </div>
+      </TiltCard>
+      <div className="mt-3 px-1">
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-semibold group-hover:text-brand-orange transition-colors">
+            {p.title}
+          </h3>
+          <span className="text-xs bg-brand-orange/15 text-brand-orange border border-brand-orange/30 rounded-full px-3 py-0.5">
+            {p.category}
+          </span>
+        </div>
+        <p className="text-brand-gray text-xs mt-1 line-clamp-1">{p.tech.slice(0, 4).join(' · ')}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function Portfolio() {
   const sectionRef = useRef(null)
   const [active, setActive] = useState('All')
@@ -294,7 +453,12 @@ export default function Portfolio() {
   const closeBtnRef = useRef(null)
   const firstFilterRun = useRef(true)
 
-  const filtered = active === 'All' ? projects : projects.filter((p) => p.category === active)
+  /* 2023 practice sites still belong to the record, but they no longer lead it.
+     They live in a collapsed "Earlier work" section rather than competing with
+     the production systems for attention. */
+  const inFilter = (p) => active === 'All' || p.category === active
+  const filtered = projects.filter((p) => p.era !== 'earlier' && inFilter(p))
+  const earlier = projects.filter((p) => p.era === 'earlier' && inFilter(p))
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -386,57 +550,32 @@ export default function Portfolio() {
         {/* Grid */}
         <div className="portfolio-grid grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {filtered.map((p) => (
-            <div
-              key={p.id}
-              className="reveal group cursor-pointer scene rounded-xl"
-              onClick={() => setModal(p)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setModal(p)
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label={`View case study for ${p.title}`}
-            >
-              <TiltCard max={6} scale={1.015} className="relative overflow-hidden rounded-xl">
-                <BrowserMockup
-                  image={p.image}
-                  title={p.title}
-                  emoji={p.emoji}
-                  tech={p.tech}
-                  accent={p.accent}
-                />
-                {/* Status ribbon — actively-in-development projects */}
-                {p.status === 'building' && (
-                  <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 bg-brand-bg/90 border border-brand-orange/40 text-brand-orange text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 backdrop-blur-sm">
-                    <span className="w-1.5 h-1.5 bg-brand-orange rounded-full animate-pulse" />
-                    {p.live && p.live !== '#' ? 'Live · in progress' : 'In development'}
-                  </span>
-                )}
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-brand-orange/85 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2 rounded-xl">
-                  <div className="bg-white/20 rounded-full p-3">
-                    <ExternalLink className="text-white" size={22} />
-                  </div>
-                  <p className="text-white font-semibold text-sm">View Details</p>
-                </div>
-              </TiltCard>
-              <div className="mt-3 px-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-white font-semibold group-hover:text-brand-orange transition-colors">
-                    {p.title}
-                  </h3>
-                  <span className="text-xs bg-brand-orange/15 text-brand-orange border border-brand-orange/30 rounded-full px-3 py-0.5">
-                    {p.category}
-                  </span>
-                </div>
-                <p className="text-brand-gray text-xs mt-1 line-clamp-1">{p.tech.slice(0, 4).join(' · ')}</p>
-              </div>
-            </div>
+            <ProjectCard key={p.id} p={p} onOpen={setModal} />
           ))}
         </div>
+
+        {/* Earlier work — 2023 practice builds, kept on the record but folded
+            away so they don't compete with the production systems above. */}
+        {earlier.length > 0 && (
+          <details className="mt-12 group/earlier reveal">
+            <summary className="cursor-pointer list-none flex items-center justify-center gap-2 text-brand-gray hover:text-brand-orange transition-colors text-sm font-medium select-none">
+              <ChevronDown
+                size={16}
+                className="transition-transform duration-300 group-open/earlier:rotate-180"
+              />
+              Earlier work — {earlier.length} practice{' '}
+              {earlier.length === 1 ? 'build' : 'builds'} from 2023
+            </summary>
+            <p className="text-center text-brand-gray/60 text-xs mt-3 max-w-lg mx-auto">
+              Static HTML/CSS sites I built while learning. Kept here for the record.
+            </p>
+            <div className="portfolio-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+              {earlier.map((p) => (
+                <ProjectCard key={p.id} p={p} onOpen={setModal} />
+              ))}
+            </div>
+          </details>
+        )}
       </div>
 
       {/* Modal */}
@@ -477,6 +616,7 @@ export default function Portfolio() {
                 emoji={modal.emoji}
                 tech={modal.tech}
                 accent={modal.accent}
+                live={modal.live}
               />
             </div>
 
@@ -551,14 +691,16 @@ export default function Portfolio() {
 
               {/* Links — only render a live link when there actually is one */}
               <div className="flex flex-wrap gap-3 pt-2">
-                <a
-                  href={modal.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-outline text-xs flex items-center gap-2"
-                >
-                  <Github size={14} /> GitHub
-                </a>
+                {modal.github && (
+                  <a
+                    href={modal.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline text-xs flex items-center gap-2"
+                  >
+                    <Github size={14} /> GitHub
+                  </a>
+                )}
                 {modal.live && modal.live !== '#' ? (
                   <>
                     <a
@@ -580,6 +722,11 @@ export default function Portfolio() {
                   <span className="text-brand-orange text-xs flex items-center gap-2 px-4 py-3">
                     <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
                     In active development — launching soon
+                  </span>
+                ) : modal.status === 'built' ? (
+                  <span className="text-emerald-300 text-xs flex items-center gap-2 px-4 py-3">
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+                    Built and working — not yet deployed publicly
                   </span>
                 ) : (
                   <span className="text-brand-gray/50 text-xs flex items-center gap-2 px-4 py-3">
