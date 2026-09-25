@@ -16,7 +16,10 @@ export default function Navbar() {
   }, [])
 
   const scrollTo = (id) => {
-    document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })
+    const el = document.getElementById(id.toLowerCase())
+    // On a case-study page the home sections aren't mounted; route home first.
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    else window.location.hash = id.toLowerCase()
     setOpen(false)
     setActive(id)
   }

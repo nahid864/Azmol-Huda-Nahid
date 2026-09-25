@@ -1,28 +1,65 @@
 import { useEffect, useRef, useState } from 'react'
-import { X, ExternalLink, Github, CheckCircle2, Lock, ChevronDown } from 'lucide-react'
+import { X, ExternalLink, Github, CheckCircle2, Lock, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import TiltCard from './TiltCard'
+import { CASE_STUDIES } from '../data/caseStudies'
 
 const IMG_BASE = import.meta.env.BASE_URL + 'assets/images/'
 
+const shots = (dir, list) =>
+  list.map(([slug, caption]) => ({ src: `${IMG_BASE}projects/${dir}/${slug}.jpg`, caption }))
+
+const BEANOVA_GALLERY = shots('beanova', [
+  ['hero', 'Hero: a single AI-generated video (Kling v3.0) scrubs forward and rewinds with the scroll.'],
+  ['story-1', 'Captions sit on a four-layer legibility system, so they stay readable over moving footage.'],
+  ['story-2', 'Later sections keep the same scrubbed footage, with a call to action over it.'],
+  ['story-3', 'The closing section. On phones and with reduced motion, a still image replaces the video.'],
+])
+
+// Production systems open a full case-study page; their content lives in
+// src/data/caseStudies.js.
+const caseCard = (id, slug) => {
+  const cs = CASE_STUDIES[slug]
+  return {
+    id,
+    title: cs.title,
+    category: cs.category,
+    caseStudy: slug,
+    image: cs.hero.src,
+    tech: cs.stack,
+    live: cs.live || '#',
+    status: cs.status,
+  }
+}
+
 const projects = [
+  caseCard(5, 'everyday-crackers'),
+  caseCard(9, 'nuigent'),
+  caseCard(10, 'savoria'),
+  caseCard(11, 'medicore'),
+  caseCard(6, 'bloomsberry'),
   {
-    id: 1,
-    title: 'Laravel Admin Panel',
-    category: 'Laravel',
-    image: IMG_BASE + 'admin-panel.jpg',
-    tech: ['Laravel', 'Blade', 'Bootstrap', 'MySQL'],
-    problem: 'I wanted a real example of a full admin backend — not a tutorial clone — so I built one covering the exact features a live e-commerce operation actually needs: products, inventory, orders, customers and ads, all from one place.',
-    solution: 'Built a complete Laravel admin panel with 11 screens covering Dashboard, User Management, Products, Inventory, Customers, Orders, Order History, Ads Management and Activity Logs. Implemented role-based access control and real-time inventory tracking.',
-    result: 'Fully functional e-commerce administration system with CRUD operations, role-based access, real-time inventory and activity logging across 11 dedicated screens.',
-    role: 'Solo Full-Stack Developer',
+    id: 8,
+    title: 'Beanova',
+    category: 'Front-end',
+    gallery: BEANOVA_GALLERY,
+    emoji: '☕',
+    accent: '#C8964F',
+    tech: ['HTML5', 'CSS3', 'JavaScript', 'ffmpeg'],
+    problem:
+      'I wanted to see how far a single hand-coded page could go with AI-generated media doing all the visual work — a cinematic, scroll-driven story for a coffee shop that still holds up with no JavaScript and no video support.',
+    solution:
+      'Built a one-page site in plain HTML, CSS and vanilla JS — one folder, no framework, no build step. A single AI-generated hero video (Kling v3.0) scrubs forward and rewinds with the scroll via a blob fetch and an eased rAF loop; section stills came from Soul 2, all processed with ffmpeg. A four-layer legibility system keeps captions readable over the footage, and five accessibility gates swap in a designed still image on phones and for reduced-motion visitors.',
+    result:
+      'A complete, cinematic coffee-shop site that stays fully functional even if the video never loads. Verified with a headless-Chrome self-test covering scrub tracking, caption timing, the press-and-hold interaction, the no-video fallback, reduced motion both directions, phone widths and a zero-console-error pass. ~28.5 AI-media credits total; deploys as static files to any host.',
+    role: 'Solo Front-end Developer',
     features: [
-      '11 dedicated admin screens',
-      'Role-based access control',
-      'Real-time inventory tracking',
-      'Activity logging & audit trail',
+      'Scroll-scrubbed AI hero video (forward + rewind)',
+      'Press-and-hold "pour your own cup" reveal',
+      'Four-layer caption legibility system',
+      'Reduced-motion & mobile still-image fallbacks',
     ],
-    github: 'https://github.com/nahid864',
-    live: '#',
+    github: 'https://github.com/nahid864/Beanova',
+    live: 'https://nahid864.github.io/Beanova/',
   },
   {
     id: 2,
@@ -83,177 +120,6 @@ const projects = [
     github: 'https://github.com/nahid864',
     live: 'https://nahid864.github.io/Minimo',
     era: 'earlier',
-  },
-  {
-    id: 5,
-    title: 'Everyday Crackers',
-    category: 'Full-stack',
-    emoji: '🛒',
-    accent: '#FF5A1F',
-    tech: ['Laravel', 'Tailwind', 'Alpine.js', 'MySQL'],
-    problem:
-      'My own EDC shop was running on a site derived from a licensed third-party commercial codebase — which meant I could not safely change it, and it was quietly losing money. A product with 1 unit in stock could be ordered five times over, and no delivery status had ever reached the system.',
-    solution:
-      'Rebuilt the entire store clean-room on Laravel — new schema, new models, new admin, new storefront, no third-party lineage — carrying across only the shop\'s own business data. Then I hunted the bugs the old system had been hiding: overselling (nothing checked stock in the cart or at checkout), the Steadfast courier webhook (it sat behind CSRF and every callback was refused with a 419, so no delivery status ever arrived), the chosen product colour being dropped between cart and order (nobody packing a parcel could tell which version was bought), and deactivated accounts still being able to sign in and order.',
-    result:
-      'Checkout now takes stock with a conditional decrement, so two shoppers racing for the last unit cannot both win — the loser\'s order rolls back rather than half-creating. The courier webhook authenticates with a secret compared using hash_equals and delivery statuses arrive, backed by an hourly sync. Colour is stored on the order item. Guest checkout with phone-OTP verification, cart-lead capture for abandoned carts, coupons, and CSV/PDF reporting all shipped. Built and running locally; public cutover still pending.',
-    role: 'Solo Full-Stack Developer — my own business',
-    features: [
-      'Clean-room rebuild — verified by a provenance-audit command',
-      'Race-safe stock: conditional decrement, order rolls back',
-      'Steadfast courier: webhook + hourly status sync',
-      'Guest checkout with phone-OTP verification',
-      'Cart-lead capture — abandoned carts stay followable',
-      'Admin: orders, inventory, coupons, CSV/PDF reports',
-    ],
-    live: '#',
-    status: 'built',
-  },
-  {
-    id: 6,
-    title: 'POS System',
-    category: 'Full-stack',
-    emoji: '🧾',
-    accent: '#22C55E',
-    tech: ['Laravel', 'PHP', 'MySQL'],
-    problem:
-      'I took the classic paper-ledger shop problem — stock counts that drift and no reliable view of what is actually selling — and built the system that fixes it.',
-    solution:
-      'Developed a Laravel point-of-sale system covering live inventory tracking, billing and sales reporting — so every sale updates stock automatically.',
-    result:
-      'Replaced manual record-keeping with accurate real-time inventory and sales reports the owner can act on.',
-    role: 'Solo Full-Stack Developer',
-    features: [
-      'Live inventory tracking',
-      'Billing & receipt generation',
-      'Sales reporting dashboard',
-      'Automatic stock deduction',
-    ],
-    github: 'https://github.com/nahid864',
-    live: '#',
-  },
-  {
-    id: 7,
-    title: 'Black Electrical',
-    category: 'Full-stack',
-    emoji: '⚡',
-    accent: '#61DAFB',
-    tech: ['React', 'React Router', 'React Hook Form', 'Node.js', 'MongoDB'],
-    problem:
-      'I wanted a proper React app to work through — multi-page navigation and validated forms backed by a real database, not static pages — so I built one around an electrical-services brief.',
-    solution:
-      'Built a React front-end with React Router for navigation and React Hook Form for robust validated forms, wired to a Node.js + MongoDB back-end.',
-    result:
-      'A fast, fully interactive single-page app with reliable client-side validation and persistent data.',
-    role: 'Front-end & Backend Developer',
-    features: [
-      'Multi-page routing (React Router)',
-      'Validated forms (React Hook Form)',
-      'Node.js REST backend',
-      'MongoDB data persistence',
-    ],
-    github: 'https://github.com/nahid864',
-    live: '#',
-  },
-  {
-    id: 8,
-    title: 'Beanova',
-    category: 'Front-end',
-    emoji: '☕',
-    accent: '#C8964F',
-    tech: ['HTML5', 'CSS3', 'JavaScript', 'ffmpeg'],
-    problem:
-      'I wanted to see how far a single hand-coded page could go with AI-generated media doing all the visual work — a cinematic, scroll-driven story for a coffee shop that still holds up with no JavaScript and no video support.',
-    solution:
-      'Built a one-page site in plain HTML, CSS and vanilla JS — one folder, no framework, no build step. A single AI-generated hero video (Kling v3.0) scrubs forward and rewinds with the scroll via a blob fetch and an eased rAF loop; section stills came from Soul 2, all processed with ffmpeg. A four-layer legibility system keeps captions readable over the footage, and five accessibility gates swap in a designed still image on phones and for reduced-motion visitors.',
-    result:
-      'A complete, cinematic coffee-shop site that stays fully functional even if the video never loads. Verified with a headless-Chrome self-test covering scrub tracking, caption timing, the press-and-hold interaction, the no-video fallback, reduced motion both directions, phone widths and a zero-console-error pass. ~28.5 AI-media credits total; deploys as static files to any host.',
-    role: 'Solo Front-end Developer',
-    features: [
-      'Scroll-scrubbed AI hero video (forward + rewind)',
-      'Press-and-hold "pour your own cup" reveal',
-      'Four-layer caption legibility system',
-      'Reduced-motion & mobile still-image fallbacks',
-    ],
-    github: 'https://github.com/nahid864/Beanova',
-    live: 'https://nahid864.github.io/Beanova/',
-  },
-  {
-    id: 9,
-    title: 'Nui-Gent',
-    category: 'AI',
-    emoji: '🤖',
-    accent: '#6FB4FF',
-    tech: ['FastAPI', 'Groq', 'Google Gemini', 'Meta Graph API', 'SQLite', 'Docker', 'MoviePy', 'Flet'],
-    problem:
-      'A one-person EDC shop cannot answer every DM, cost every product, write every post and run every campaign by hand, and most AI tools either drift off-brand or ship things you would never send. I wanted automation a real business could actually hand its customer-facing work to.',
-    solution:
-      'Built Nui-Gent, a multi-tenant AI agent platform. Agents reply to Facebook and Instagram DMs and comments in the owner\'s voice, take orders, write and schedule content, render posters and promo videos, and run phased marketing campaigns, with a human approval gate on every outgoing action. Replies come from a 6-model ensemble (five Groq models plus Gemini in parallel) with a judge model merging or picking the best, so it rides through rate limits. Multi-tenancy is enforced by an AST test that fails the build if any scoped query is missing a business_id, and per-business credentials are Fernet-encrypted in the database rather than a shared .env.',
-    result:
-      'Live and running the full customer-facing operation of Everyday Crackers.BD, 24/7, on a dedicated machine behind a Cloudflare tunnel. 478 pytest tests with a hard guard against touching the production database. Private codebase; the interface is still being polished.',
-    role: 'Solo Developer — architecture, agents, infra',
-    features: [
-      '6-model ensemble + judge, survives rate limits',
-      'Human approval gate on every outgoing action',
-      'AST-enforced multi-tenant data scoping',
-      'Landed-cost pricing with a hard price floor',
-      'Auto poster and promo-video rendering',
-      'Learns from your gate edits (weekly retro)',
-    ],
-    github: 'https://github.com/nahid864',
-    live: 'https://agent.nuigent.xyz/',
-    status: 'building',
-  },
-  {
-    id: 10,
-    title: 'Savoria',
-    category: 'Laravel',
-    emoji: '🍽️',
-    accent: '#E4B363',
-    tech: ['Laravel 10', 'MySQL', 'Blade', 'Multi-tenant'],
-    problem:
-      'Restaurant software is usually sold one install per restaurant, and the tenant boundary is whatever each query remembers to add. I wanted one platform that hosts many restaurants where a scoping mistake is structurally hard to make — and where the people using it only see what their job needs.',
-    solution:
-      'Built a multi-restaurant SaaS platform on Laravel. Every operational row carries a restaurant_id; reads are narrowed by a global scope and writes stamped automatically, so a model opts into scoping once at the top of the class instead of every query remembering. The tenant is resolved exactly once per request — from a URL slug, the signed-in person\'s own restaurant, or the restaurant a super admin has entered — and nothing else sets it. Identity and credentials are deliberately split across two tables, so a staff record outlives its login and nothing reading a profile can leak a password hash.',
-    result:
-      'A working platform covering point of sale, till shifts with counted-drawer variance, a live floor plan, kitchen display, reservations and a walk-in queue, inventory with an append-only stock ledger, recipe costing, and a public storefront per restaurant. Five fixed roles enforced three times over — route middleware, deny-by-default gates, and in the views — with a smoke test that enumerates the router itself and walks every GET route as every role, so a route added next month is covered the day it is added. Tests run against MySQL rather than SQLite, because the stock ledger depends on SELECT ... FOR UPDATE. Not deployed publicly.',
-    role: 'Solo Full-Stack Developer',
-    features: [
-      'Multi-tenant: global scope + auto-stamped restaurant_id',
-      'POS, till shifts, live floor plan, kitchen display',
-      'Append-only stock ledger with recipe costing',
-      'Role smoke test walks every route as every role',
-      'Managers see the till but never the day\'s totals',
-      'Cooks never see a price',
-    ],
-    github: 'https://github.com/nahid864/restaurant-management-system',
-    live: '#',
-    status: 'built',
-  },
-  {
-    id: 11,
-    title: 'MediCore',
-    category: 'Laravel',
-    emoji: '🏥',
-    accent: '#4FA3C8',
-    tech: ['Laravel 10', 'MySQL', 'Blade', 'AdminLTE'],
-    problem:
-      'Pharmacy stock is not a number — it is a set of batches with different expiry dates, and treating it as a number is how expired medicine reaches a patient. A hospital also needs one bill per patient across the pharmacy counter, the consultation desk and the ward, not three separate debts nobody can reconcile.',
-    solution:
-      'Built a hospital platform on Laravel 10 around four decisions: stock is a batch rather than a number, with expiry-ordered (FEFO) picking; bed occupancy and appointment slots are settled by the database rather than by application checks; a business runs only the features it ticked, so a single pharmacy shop and a full hospital use the same install; and a patient balance is read from the ledger rather than stored, so it cannot drift. All business logic lives in services — controllers only validate and delegate.',
-    result:
-      'Three working halves joined by prescriptions and a shared stock ledger: a pharmacy with real batch and expiry control, doctor appointments with live slot grids and a queue board, and inpatient wards with a bed board, drug chart and a running bill. One balance per patient across consultations, pharmacy credit and ward charges, settled by a single payment split over several debts. Gapless, lock-based invoice and MRN numbering. AdminLTE and its dependencies are served from the app itself, so a hospital on an unreliable line still gets a styled interface. Not deployed publicly.',
-    role: 'Solo Full-Stack Developer',
-    features: [
-      'Batch + expiry stock with FEFO allocation',
-      'One patient balance across pharmacy, OPD and wards',
-      'Inpatient wards: bed board, drug chart, running bill',
-      'Feature switches — a pharmacy and a hospital, one install',
-      'Gapless lock-based invoice / MRN numbering',
-      'Runs fully offline-styled: no CDN dependency',
-    ],
-    live: '#',
-    status: 'built',
   },
 ]
 
@@ -367,11 +233,13 @@ function BrowserMockup({ image, title, emoji = '💻', tech, accent = '#FF5A1F',
  *   (none)   — nothing to say
  */
 function StatusRibbon({ status, live }) {
-  if (status !== 'building' && status !== 'built') return null
+  if (status !== 'building' && status !== 'built' && status !== 'live') return null
 
   const isLive = live && live !== '#'
   const label =
-    status === 'building'
+    status === 'live'
+      ? 'Live'
+      : status === 'building'
       ? isLive
         ? 'Live · in progress'
         : 'In development'
@@ -398,15 +266,80 @@ function StatusRibbon({ status, live }) {
   )
 }
 
+function Gallery({ items, title, live }) {
+  const [i, setI] = useState(0)
+  const stripRef = useRef(null)
+  const go = (n) => setI((n + items.length) % items.length)
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowRight') go(i + 1)
+      if (e.key === 'ArrowLeft') go(i - 1)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  })
+
+  useEffect(() => {
+    stripRef.current?.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+  }, [i])
+
+  const shot = items[i]
+
+  return (
+    <div>
+      <div className="relative group/gal">
+        <BrowserMockup image={shot.src} title={title} live={live} />
+        {['left', 'right'].map((side) => (
+          <button
+            key={side}
+            onClick={() => go(side === 'left' ? i - 1 : i + 1)}
+            aria-label={side === 'left' ? 'Previous screenshot' : 'Next screenshot'}
+            className={`absolute top-1/2 ${side === 'left' ? 'left-2' : 'right-2'} w-9 h-9 rounded-full bg-black/60 hover:bg-brand-orange text-white flex items-center justify-center transition opacity-80 sm:opacity-0 sm:group-hover/gal:opacity-100 focus:opacity-100`}
+          >
+            {side === 'left' ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-start gap-3 mt-3 min-h-[2.5rem]">
+        <span className="shrink-0 text-[10px] font-semibold text-brand-orange bg-brand-orange/10 border border-brand-orange/30 rounded-full px-2 py-0.5 mt-0.5 tabular-nums">
+          {i + 1} / {items.length}
+        </span>
+        <p className="text-brand-gray text-xs leading-relaxed" aria-live="polite">
+          {shot.caption}
+        </p>
+      </div>
+
+      <div ref={stripRef} className="flex gap-2 overflow-x-auto mt-3 pb-1 snap-x">
+        {items.map((s, n) => (
+          <button
+            key={s.src}
+            onClick={() => setI(n)}
+            aria-label={`Show screenshot ${n + 1}`}
+            aria-current={n === i}
+            className={`shrink-0 snap-start w-24 rounded-md overflow-hidden border-2 transition ${
+              n === i ? 'border-brand-orange' : 'border-transparent opacity-60 hover:opacity-100'
+            }`}
+          >
+            <img src={s.src} alt="" loading="lazy" className="w-full aspect-[16/10] object-cover object-top" />
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ProjectCard({ p, onOpen }) {
+  const open = () => (p.caseStudy ? (window.location.hash = `#/work/${p.caseStudy}`) : onOpen(p))
   return (
     <div
       className="reveal group cursor-pointer scene rounded-xl"
-      onClick={() => onOpen(p)}
+      onClick={open}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onOpen(p)
+          open()
         }
       }}
       role="button"
@@ -415,7 +348,7 @@ function ProjectCard({ p, onOpen }) {
     >
       <TiltCard max={6} scale={1.015} className="relative overflow-hidden rounded-xl">
         <BrowserMockup
-          image={p.image}
+          image={p.image || p.gallery?.[0]?.src}
           title={p.title}
           emoji={p.emoji}
           tech={p.tech}
@@ -423,12 +356,17 @@ function ProjectCard({ p, onOpen }) {
           live={p.live}
         />
         <StatusRibbon status={p.status} live={p.live} />
+        {(p.caseStudy || p.gallery?.length > 1) && (
+          <span className="absolute top-3 right-3 z-10 bg-brand-bg/90 border border-white/10 text-white/80 text-[10px] font-semibold rounded-full px-2.5 py-1 backdrop-blur-sm">
+            {p.caseStudy ? 'Case study' : `${p.gallery.length} screens`}
+          </span>
+        )}
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-brand-orange/85 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2 rounded-xl">
           <div className="bg-white/20 rounded-full p-3">
             <ExternalLink className="text-white" size={22} />
           </div>
-          <p className="text-white font-semibold text-sm">View Details</p>
+          <p className="text-white font-semibold text-sm">{p.caseStudy ? 'Read the case study' : 'View details'}</p>
         </div>
       </TiltCard>
       <div className="mt-3 px-1">
@@ -588,7 +526,7 @@ export default function Portfolio() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-modal-title"
-            className="modal-content bg-brand-card border border-brand-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className={`modal-content bg-brand-card border border-brand-border rounded-2xl ${modal.gallery?.length ? 'max-w-4xl' : 'max-w-2xl'} w-full max-h-[90vh] overflow-y-auto`}
           >
             {/* Modal header */}
             <div className="flex items-center justify-between p-5 border-b border-brand-border">
@@ -610,14 +548,18 @@ export default function Portfolio() {
 
             {/* Screenshot */}
             <div className="p-5 border-b border-brand-border">
-              <BrowserMockup
-                image={modal.image}
-                title={modal.title}
-                emoji={modal.emoji}
-                tech={modal.tech}
-                accent={modal.accent}
-                live={modal.live}
-              />
+              {modal.gallery?.length ? (
+                <Gallery key={modal.id} items={modal.gallery} title={modal.title} live={modal.live} />
+              ) : (
+                <BrowserMockup
+                  image={modal.image}
+                  title={modal.title}
+                  emoji={modal.emoji}
+                  tech={modal.tech}
+                  accent={modal.accent}
+                  live={modal.live}
+                />
+              )}
             </div>
 
             {/* Case study */}
