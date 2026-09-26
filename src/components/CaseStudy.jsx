@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight, ExternalLink, Github, CheckCircle2, XCircle, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
 import { CASE_STUDIES, CASE_STUDY_ORDER } from '../data/caseStudies'
+import ArchitectureDiagram from './ArchitectureDiagram'
 
 const STATUS = {
   live: { label: 'Live', tone: 'border-emerald-400/40 text-emerald-300', dot: 'bg-emerald-400' },
@@ -45,8 +46,47 @@ function Lightbox({ shots, index, onClose, onGo }) {
         </button>
       </div>
       <div className="relative flex-1 min-h-0" onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <div className="h-full overflow-y-auto flex justify-center px-2 sm:px-16 py-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-          <img src={shot.src} alt={shot.caption} className={`max-w-full rounded-lg shadow-2xl ${shot.tall ? 'h-auto self-start' : 'max-h-full object-contain self-center'}`} />
+        <div className="h-full overflow-y-auto px-2 sm:px-16 py-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+          <div className={`mx-auto w-fit flex flex-col items-center gap-4 ${shot.tall ? '' : 'min-h-full justify-center'}`}>
+            <div className="relative">
+              <img
+                src={shot.src}
+                alt={shot.caption}
+                className={`max-w-full rounded-lg shadow-2xl ${
+                  shot.tall
+                    ? 'h-auto'
+                    : shot.notes
+                      ? 'max-h-[calc(100vh-20rem)] object-contain'
+                      : 'max-h-[calc(100vh-11rem)] object-contain'
+                }`}
+              />
+              {/* Numbered pins sit on the screenshot; the text lives below it,
+                  so it stays readable and searchable instead of being baked
+                  into the image. */}
+              {shot.notes?.map((n, i) => (
+                <span
+                  key={i}
+                  style={{ left: `${n.x}%`, top: `${n.y}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-brand-orange text-white text-xs font-bold flex items-center justify-center ring-4 ring-brand-orange/30 shadow-lg"
+                  aria-hidden="true"
+                >
+                  {i + 1}
+                </span>
+              ))}
+            </div>
+            {shot.notes && (
+              <ol className="mb-2 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 w-full max-w-5xl bg-black/70 backdrop-blur-sm rounded-xl px-10 sm:px-5 py-4">
+                {shot.notes.map((n, i) => (
+                  <li key={i} className="flex gap-2.5 text-xs text-brand-gray leading-relaxed">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-brand-orange/20 text-brand-orange font-bold flex items-center justify-center text-[10px]">
+                      {i + 1}
+                    </span>
+                    {n.text}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
         </div>
         {shots.length > 1 &&
           [-1, 1].map((d) => (
@@ -74,12 +114,17 @@ function ShotGrid({ shots, onOpen, cols = 'sm:grid-cols-2' }) {
             className="relative block w-full overflow-hidden rounded-xl border border-brand-border bg-brand-card aspect-[16/10] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange"
             aria-label={`Enlarge: ${s.caption}`}
           >
-            <img src={s.src} alt="" loading="lazy" className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]" />
+            <img src={s.thumb || s.src} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]" />
             <span className="absolute bottom-2 right-2 bg-black/70 text-white rounded-md p-1.5 opacity-0 group-hover:opacity-100 transition">
               <Maximize2 size={14} />
             </span>
             {s.tall && (
               <span className="absolute bottom-2 left-2 bg-black/70 text-white/80 text-[10px] rounded-md px-2 py-0.5">Full page</span>
+            )}
+            {s.notes && (
+              <span className="absolute top-2 left-2 bg-brand-orange text-white text-[10px] font-semibold rounded-md px-2 py-0.5">
+                {s.notes.length} annotations
+              </span>
             )}
           </button>
           <figcaption className="text-brand-gray text-xs leading-relaxed mt-2">{s.caption}</figcaption>
@@ -305,6 +350,13 @@ export default function CaseStudy({ slug }) {
             <div className="mt-12">
               <Roles roles={cs.roles} onOpen={open} />
             </div>
+          </Section>
+        )}
+
+        {/* How the pieces fit, for the projects where that is the story */}
+        {cs.architecture && (
+          <Section eyebrow="Architecture" title="How the two systems fit together" intro={cs.architecture}>
+            <ArchitectureDiagram />
           </Section>
         )}
 

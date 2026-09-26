@@ -8,7 +8,6 @@ import Services from './components/Services'
 import AIAutomation from './components/AIAutomation'
 import Portfolio from './components/Portfolio'
 import CTA from './components/CTA'
-import Blog from './components/Blog'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CaseStudy from './components/CaseStudy'
@@ -65,7 +64,6 @@ export default function App() {
           <AIAutomation />
           <Portfolio />
           <CTA />
-          <Blog />
           <Contact />
         </main>
       )}

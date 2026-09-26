@@ -6,7 +6,11 @@ import { CASE_STUDIES } from '../data/caseStudies'
 const IMG_BASE = import.meta.env.BASE_URL + 'assets/images/'
 
 const shots = (dir, list) =>
-  list.map(([slug, caption]) => ({ src: `${IMG_BASE}projects/${dir}/${slug}.jpg`, caption }))
+  list.map(([slug, caption]) => ({
+    src: `${IMG_BASE}projects/${dir}/${slug}.webp`,
+    thumb: `${IMG_BASE}projects/${dir}/${slug}.thumb.webp`,
+    caption,
+  }))
 
 const BEANOVA_GALLERY = shots('beanova', [
   ['hero', 'Hero: a single AI-generated video (Kling v3.0) scrubs forward and rewinds with the scroll.'],
@@ -24,7 +28,7 @@ const caseCard = (id, slug) => {
     title: cs.title,
     category: cs.category,
     caseStudy: slug,
-    image: cs.hero.src,
+    image: cs.hero.thumb || cs.hero.src,
     tech: cs.stack,
     live: cs.live || '#',
     status: cs.status,
@@ -348,7 +352,7 @@ function ProjectCard({ p, onOpen }) {
     >
       <TiltCard max={6} scale={1.015} className="relative overflow-hidden rounded-xl">
         <BrowserMockup
-          image={p.image || p.gallery?.[0]?.src}
+          image={p.image || p.gallery?.[0]?.thumb || p.gallery?.[0]?.src}
           title={p.title}
           emoji={p.emoji}
           tech={p.tech}

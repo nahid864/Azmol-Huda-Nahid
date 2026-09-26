@@ -157,12 +157,12 @@ export default function Hero() {
                             style={{ transitionDelay: '0.2s' }}
                         >
                             <p className="text-lg sm:text-xl font-semibold text-brand-gray">
-                                Full-Stack Web Developer
+                                AI Automation &amp; Full-Stack Engineer
                             </p>
                             <p className="text-brand-gray/70 mt-1 text-sm sm:text-base">
-                                Laravel · React · WordPress · Flutter —{' '}
+                                Python · FastAPI · Laravel · React —{' '}
                                 <span className="text-shimmer font-semibold">
-                                    Super charged with AI
+                                    AI systems that run a real business
                                 </span>
                             </p>
                         </div>
@@ -173,11 +173,29 @@ export default function Hero() {
                             style={{ transitionDelay: '0.3s' }}
                         >
                             <p className="text-brand-gray text-sm sm:text-base leading-relaxed max-w-lg">
-                                Full-stack web apps in Laravel, React and
-                                WordPress, cross-platform mobile in Flutter, and
-                                AI automation for the repetitive work. Web and
-                                AI automation are where I go deepest.
+                                I build production AI automation on Python and
+                                FastAPI, and the Laravel systems it plugs into.
+                                My own EDC shop runs on both: a Laravel
+                                storefront and an AI agent that answers
+                                customers and takes stock, live, every day.
                             </p>
+                        </div>
+
+                        {/* Proof strip: the three things worth checking */}
+                        <div
+                            className="flex flex-wrap gap-x-6 gap-y-2 reveal visible"
+                            style={{ transitionDelay: '0.35s' }}
+                        >
+                            {[
+                                ['2', 'live production systems'],
+                                ['1,089', 'automated tests'],
+                                ['24/7', 'agent uptime'],
+                            ].map(([value, label]) => (
+                                <div key={label} className="flex items-baseline gap-2">
+                                    <span className="text-white font-bold text-lg">{value}</span>
+                                    <span className="text-brand-gray/70 text-xs">{label}</span>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Buttons */}

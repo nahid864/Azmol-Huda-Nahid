@@ -3,7 +3,7 @@
 // live Everyday Crackers admin with customer details blurred.
 
 const P = import.meta.env.BASE_URL + 'assets/images/projects/'
-const img = (path, caption, extra = {}) => ({ src: P + path + '.jpg', caption, ...extra })
+const img = (path, caption, extra = {}) => ({ src: `${P}${path}.webp`, thumb: `${P}${path}.thumb.webp`, caption, ...extra })
 const tall = { tall: true }
 
 export const CASE_STUDIES = {
@@ -30,6 +30,8 @@ export const CASE_STUDIES = {
       'I rebuilt the whole store clean-room on Laravel 12: new schema, new models, new admin, new storefront, carrying across only the shop\'s own business data. A provenance-audit command scans the codebase to prove no third-party code came along. Then I fixed what the old system had been hiding, and connected the shop to Nuigent, the AI agent that sells for it on Facebook and Instagram.',
     outcome:
       'The store is live. Checkout takes stock with a conditional decrement, so two shoppers racing for the last unit cannot both win. Courier statuses arrive through an authenticated webhook backed by an hourly sync. Messenger sales made by the AI agent now take stock on the website itself, and survive the website being briefly down.',
+    architecture:
+      'The shop owns the stock and the money; the agent owns the conversation. Everything between them goes through one narrow, scoped API, so the AI side can be wrong without being dangerous.',
     sections: [
       {
         id: 'storefront',
@@ -43,9 +45,48 @@ export const CASE_STUDIES = {
           'Public order tracking by order number and phone, no account needed',
         ],
         shots: [
-          img('edc/live-home', 'Home page, live: banners, categories and product rows are all managed from the admin.', tall),
-          img('edc/live-shop', 'Shop all, live: filter, sort, discount badges and stock urgency on every card.', tall),
+          img('edc/shopper-home', 'Home: hero slider, category tiles and product rows, all driven from the admin.'),
+          img('edc/shopper-shop', 'Shop all: category filter, price range, in-stock toggle and sort.'),
+          img('edc/shopper-product', 'Product page: gallery, required colour choice, stock per colour, delivery and return terms.'),
+          img('edc/live-home', 'The same home page on the live site, full length.', tall),
+          img('edc/live-shop', 'Shop all on the live site, full length.', tall),
           img('edc/live-track', 'Public order tracking: order number plus phone gives a status timeline.'),
+        ],
+      },
+      {
+        id: 'buying',
+        title: 'Buying something, start to finish',
+        intro:
+          'The whole purchase path, captured on a local copy of the shop so no test order lands in the real books. Every cart on the live site is recorded as a sales lead, which is a feature, not something to pollute for screenshots.',
+        points: [
+          'Slide-out cart drawer on add, with a free-delivery progress bar and an upsell row',
+          'Guest checkout: no account needed, but one tick saves the order to a new account',
+          'District and thana are pre-filled from the typed address, and can be corrected',
+          'Delivery is priced by zone, and a coupon can be applied before payment',
+          'Phone verification gates the order when the shop has SMS credit',
+          'Confirmation page plus a printable, downloadable PDF invoice',
+        ],
+        shots: [
+          img('edc/shopper-cart-drawer', 'Add to cart opens a drawer instead of a page reload, so browsing is never interrupted.', {
+            notes: [
+              { x: 40, y: 12, text: 'Free-delivery progress: the shopper is told exactly how much more unlocks free delivery.' },
+              { x: 30, y: 24, text: 'The chosen colour is carried on the line, so the person packing the parcel knows which one to pick.' },
+              { x: 44, y: 55, text: 'Upsell row drawn from the same catalogue, not a hardcoded list.' },
+            ],
+          }),
+          img('edc/shopper-cart', 'Cart: quantities, line totals and a summary that holds delivery back until a zone is chosen.'),
+          img('edc/shopper-checkout', 'Checkout, filled in. Guest by default, with delivery priced by zone.', {
+            notes: [
+              { x: 17, y: 27, text: 'Free-delivery bar follows the shopper into checkout: ৳851 more to go, 57% there.' },
+              { x: 15, y: 56, text: 'Guest checkout by default. One tick turns the order into an account, no separate signup flow.' },
+              { x: 28, y: 69, text: 'District and thana are guessed from the typed address, and the copy invites a correction rather than assuming.' },
+              { x: 71, y: 58, text: 'Coupon codes are validated against limits and expiry before the total changes.' },
+              { x: 62, y: 67, text: 'Delivery is a separate line, priced by the zone picked below, not a flat guess.' },
+              { x: 19, y: 94, text: 'Delivery area: three zones, each with its own charge. A zone can be switched off without losing its price.' },
+            ],
+          }),
+          img('edc/shopper-order-success', 'Confirmation: order number, the lines with their colours, and links to the invoice and tracking.'),
+          img('edc/shopper-invoice', 'The invoice: gapless order number, amount in words, and the check-before-you-accept terms printed on it.'),
         ],
       },
       {
@@ -78,6 +119,15 @@ export const CASE_STUDIES = {
           'The old site\'s courier webhook sat behind CSRF and every callback failed with a 419. That is fixed, with an hourly sync as a backstop',
         ],
         shots: [
+          img('edc/admin-dashboard', 'Admin dashboard: the numbers the owner actually opens the laptop for.', {
+            notes: [
+              { x: 21, y: 16, text: 'Revenue counts paid orders only, so a pile of unpaid cash-on-delivery orders cannot flatter the figure.' },
+              { x: 29, y: 26, text: 'Orders waiting for a decision, linked straight into the review queue.' },
+              { x: 45, y: 46, text: 'Fourteen days of revenue: short enough to show this week, long enough to show a trend.' },
+              { x: 85, y: 50, text: 'Order mix by status, and how many captured carts became orders.' },
+              { x: 80, y: 88, text: 'Low stock broken down per colour, because a product can read "in stock" while the colour someone wants is gone.' },
+            ],
+          }),
           img('edc/admin-orders-new', 'New Orders: nothing ships until someone accepts it.'),
           img('edc/live-orders', 'Order Management, live: payment and delivery status side by side (customer names blurred).'),
           img('edc/admin-order-create', 'Manual order entry with live product search.'),
@@ -240,7 +290,15 @@ export const CASE_STUDIES = {
         shots: [
           img('savoria/roles/waiter/floor-tables', 'Floor plan: Occupied is written by the open bill, not by hand.'),
           img('savoria/roles/waiter/floor-order-table', 'Ordering at table T01.'),
-          img('savoria/roles/waiter/floor-bill-order', 'A running bill: held courses, fire, move, join, send back.'),
+          img('savoria/roles/waiter/floor-bill-order', 'A running bill, as the waiter sees it.', {
+            notes: [
+              { x: 32, y: 35, text: 'A held course is on the bill and paid for like any other. It is simply not the kitchen\'s problem until the waiter calls it.' },
+              { x: 69, y: 35, text: 'Send back a single dish without voiding the bill or re-keying the order.' },
+              { x: 65, y: 67, text: 'Fire the course when the table is ready, and the kitchen display gets it at that moment.' },
+              { x: 26, y: 81, text: 'Move a party to another table: the bill travels with the people, not the furniture.' },
+              { x: 53, y: 81, text: 'Join two tables onto one bill. The absorbed bill keeps its number and is marked joined, so nothing vanishes from the history.' },
+            ],
+          }),
           img('savoria/roles/waiter/floor-waitlist', 'The walk-in queue with quoted waits.'),
         ],
       },
@@ -285,7 +343,15 @@ export const CASE_STUDIES = {
     statusNote: 'Built and working. Not deployed publicly.',
     role: 'Solo Full-Stack Developer',
     stack: ['Laravel 10', 'PHP 8.1', 'MySQL', 'Blade', 'AdminLTE', 'Spatie Permission'],
-    hero: img('medicore/wards-board', 'Bed board: occupancy by ward, days admitted and the outstanding balance.'),
+    hero: img('medicore/wards-board', 'Bed board: occupancy by ward, days admitted and the outstanding balance.', {
+      notes: [
+        { x: 25, y: 13, text: 'Occupancy is counted from the admissions themselves, so the board cannot disagree with the ward.' },
+        { x: 35, y: 30, text: 'What the current inpatients owe, in one figure, read from the ledger rather than stored.' },
+        { x: 79, y: 31, text: 'Patients past their expected discharge date, named. This is the list the ward actually chases.' },
+        { x: 33, y: 39, text: 'Five bed states, including cleaning and maintenance, so a bed is not offered before it is ready.' },
+        { x: 26, y: 57, text: 'Each occupied bed shows the patient, the consultant and the day count of the stay.' },
+      ],
+    }),
     glance: [
       { value: '3', label: 'halves: pharmacy, OPD, wards' },
       { value: '1', label: 'balance per patient' },
@@ -428,6 +494,8 @@ export const CASE_STUDIES = {
       'Agents that reply to Facebook and Instagram DMs and comments in the owner\'s voice, in Bangla or English, take orders, write and schedule content, render posters and promo videos, and run phased marketing campaigns. Replies come from a six-model ensemble (five Groq models plus Gemini) with a judge that merges or picks the best, so it rides through rate limits. A customer\'s photo is matched to the product by image embedding, not by a sentence about it.',
     outcome:
       'It runs the customer-facing operation of Everyday Crackers.BD on a dedicated machine behind a Cloudflare tunnel. Messenger sales take stock on the shop website directly, queued and replayed if the site is down. Multi-tenancy is enforced by a test that reads the source and fails the build on any unscoped query.',
+    architecture:
+      'Nuigent is the front desk; Everyday Crackers is the shop behind it. The agent holds a token scoped to the catalogue and nothing else, and a sale it takes on Messenger is written to the shop, not to a spreadsheet it hopes someone reconciles later.',
     sections: [
       {
         id: 'agent',

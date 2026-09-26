@@ -1,51 +1,32 @@
 import { useEffect, useRef } from 'react'
 import TiltCard from './TiltCard'
 
+/* Four things I have shipped to production and can show you the code for.
+   The long list this replaced advertised work with nothing to point at. */
 const services = [
   {
-    icon: '🌐',
-    title: 'WordPress Development',
-    desc: 'Custom themes, plugins, WooCommerce stores & performance-tuned WordPress sites.',
-  },
-  {
-    icon: '⚛️',
-    title: 'React & Front-end Web Apps',
-    desc: 'Blazing-fast, interactive SPAs and component-driven UIs built with React.',
-  },
-  {
-    icon: '📱',
-    title: 'Flutter Cross-Platform Apps',
-    desc: 'Single-codebase Android & iOS apps with Flutter & Dart, wired to REST APIs.',
-  },
-  {
-    icon: '🖥️',
-    title: 'Laravel / PHP Backend Development',
-    desc: 'Scalable REST APIs, admin panels and database-driven apps with Laravel & PHP.',
-  },
-  {
-    icon: '🔍',
-    title: 'SEO Optimization & Maintenance',
-    desc: 'Technical SEO audits, speed optimization and ongoing site health maintenance.',
-  },
-  {
     icon: '🤖',
-    title: 'AI & Workflow Automation',
-    desc: 'AI-powered pipelines, social scheduling and scripts that remove repetitive manual work.',
+    title: 'AI automation that a business can trust',
+    desc: 'LLM workflows grounded in your own data, with a human approval gate, escalation when the answer is not known, and tests around the whole thing. Python and FastAPI.',
+    proof: { label: 'See Nuigent', href: '#/work/nuigent' },
   },
   {
-    icon: '📣',
-    title: 'Meta Business Setup & Ads',
-    desc: 'Facebook & Instagram Business setup, pixel integration and ad campaign management.',
+    icon: '🛒',
+    title: 'E-commerce and admin platforms',
+    desc: 'Laravel storefronts and back offices: catalogue, stock that survives a race, courier integration, reports, and role-based access down to the page.',
+    proof: { label: 'See Everyday Crackers', href: '#/work/everyday-crackers' },
   },
   {
-    icon: '🎨',
-    title: 'Graphic Design',
-    desc: 'Polished visuals, brand graphics, short-form video edits via Figma, Canva & CapCut.',
+    icon: '🔗',
+    title: 'Integrations between systems that were never meant to talk',
+    desc: 'REST APIs, webhooks with real signature checks, Google Sheets pipelines, and retry queues so a sale is never lost when one side is down.',
+    proof: { label: 'See the stock sync', href: '#/work/everyday-crackers' },
   },
   {
-    icon: '💡',
-    title: 'Problem Solving & Tech Consulting',
-    desc: 'Architecture reviews, debugging, tech-stack advice and proof-of-concept builds.',
+    icon: '🏢',
+    title: 'Multi-tenant SaaS',
+    desc: 'One install, many customers, with tenant isolation enforced by the framework rather than by remembering, and fixed roles proved by a test that walks every route.',
+    proof: { label: 'See Savoria', href: '#/work/savoria' },
   },
 ]
 
@@ -80,8 +61,8 @@ export default function Services() {
             Services That <span className="text-gradient">Deliver Results</span>
           </h2>
           <p className="text-brand-gray text-sm sm:text-base max-w-xl mx-auto mt-3">
-            From design to deployment — I handle the full stack so you can focus on growing
-            your business.
+            Four things I have taken to production. Each one links to the project
+            where you can see it working.
           </p>
         </div>
 
@@ -101,6 +82,12 @@ export default function Services() {
                   {s.title}
                 </h3>
                 <p className="text-brand-gray text-xs leading-relaxed">{s.desc}</p>
+                <a
+                  href={s.proof.href}
+                  className="relative z-10 inline-flex items-center gap-1 text-brand-orange text-xs font-semibold mt-4 hover:gap-2 transition-all"
+                >
+                  {s.proof.label} →
+                </a>
               </TiltCard>
             </div>
           ))}

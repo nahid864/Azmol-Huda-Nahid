@@ -8,12 +8,16 @@ const links = [
   { label: 'Services', id: 'services' },
   { label: 'AI & Automation', id: 'ai' },
   { label: 'Portfolio', id: 'portfolio' },
-  { label: 'Blog', id: 'blog' },
   { label: 'Contact', id: 'contact' },
 ]
 
 export default function Footer() {
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const scrollTo = (id) => {
+    const el = document.getElementById(id)
+    // Case-study pages don't mount the home sections, so route home instead.
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    else window.location.hash = id
+  }
 
   return (
     <footer className="bg-brand-card border-t border-brand-border pt-14 pb-8">
@@ -26,8 +30,8 @@ export default function Footer() {
               <span className="text-brand-orange">.</span>
             </button>
             <p className="text-brand-gray text-sm leading-relaxed max-w-xs">
-              I build websites that work — and grow your business. Based in Dhaka, serving
-              clients worldwide.
+              AI automation and the full-stack systems it plugs into. Based in
+              Dhaka, working with clients anywhere.
             </p>
             {/* Socials */}
             <div className="flex gap-3">

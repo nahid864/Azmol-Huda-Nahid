@@ -2,47 +2,45 @@ import { useEffect, useRef } from 'react'
 import { Bot, Workflow, Sparkles, Search, ArrowRight } from 'lucide-react'
 import { useReducedMotion } from '../hooks/useTilt'
 
-/**
- * Levels here mirror the skills report exactly — including the honest
- * "Building now" framing for automation workflows. Overclaiming an emerging
- * skill is the fastest way to lose a technical interviewer's trust.
- */
+/* Every card names something that exists in Nuigent and can be opened on the
+   case-study page. "I use ChatGPT daily" is what the old version claimed, and
+   in 2026 that is table stakes, not an edge. */
 const aiSkills = [
   {
     icon: <Bot size={22} />,
-    title: 'ChatGPT · Claude · Gemini',
-    level: 'Advanced',
+    title: 'Grounded answers, not guesses',
+    level: 'In production',
     tone: 'strong',
-    blurb: 'Daily driver for coding, research & delivery.',
+    blurb: 'Replies built from real prices, stock and customer history.',
     detail:
-      'I use frontier LLMs every single day — pair-programming, code review, debugging, research and drafting. Not occasional experimentation: it is a core part of how I ship faster than I could alone.',
+      'The agent answers from the shop\'s own product, price and inventory data. When the answer is not in that data, or the question is sensitive, it escalates to a human instead of inventing something.',
   },
   {
     icon: <Workflow size={22} />,
-    title: 'AI Automation Workflows',
-    level: 'Building now',
-    tone: 'active',
-    blurb: 'Python scripts & n8n flows, API-triggered or scheduled.',
+    title: 'A human gate on every send',
+    level: 'In production',
+    tone: 'strong',
+    blurb: 'Approve, edit or reject before anything reaches a customer.',
     detail:
-      'Actively building automation that chains AI APIs with Python scripting and n8n — content pipelines, scheduled jobs and API-triggered workflows that take repetitive manual work off a team\'s plate.',
+      'Nothing goes out unreviewed unless the owner switches a channel to auto. Approve, edit and reject run through one shared service, and the edits feed back in so the drafts improve.',
   },
   {
     icon: <Sparkles size={22} />,
-    title: 'Prompt Engineering',
-    level: 'Intermediate',
-    tone: 'mid',
-    blurb: 'Practical, applied to real dev & content work.',
+    title: 'Six models with a judge',
+    level: 'In production',
+    tone: 'strong',
+    blurb: 'Five Groq models plus Gemini, merged by a judge model.',
     detail:
-      'Structured prompting, context design and iterative refinement — applied to production development tasks and content generation, not theory from a course.',
+      'Answers are generated in parallel and merged, so one model being rate-limited or wrong does not take the shop offline. Rate-limit retries honour the provider\'s own hint rather than a fixed sleep.',
   },
   {
     icon: <Search size={22} />,
-    title: 'AI Research Tooling',
-    level: 'Working knowledge',
-    tone: 'mid',
-    blurb: 'Perplexity & AI-assisted technical research.',
+    title: 'Tested like software, not a demo',
+    level: '1,089 tests',
+    tone: 'active',
+    blurb: 'Tenant isolation proved by a test that reads the source.',
     detail:
-      'Using AI research tools to move quickly through unfamiliar documentation, evaluate libraries and validate technical approaches before committing to them.',
+      'An AST test parses the codebase and fails the build if any scoped query is missing its business_id. Per-business credentials are encrypted in the database rather than shared in one .env.',
   },
 ]
 
@@ -112,10 +110,16 @@ export default function AIAutomation() {
             AI &amp; <span className="text-shimmer">Automation</span>
           </h2>
           <p className="text-brand-gray text-sm sm:text-base max-w-2xl mx-auto mt-3 leading-relaxed">
-            Most developers still build everything by hand. I pair full-stack engineering with
-            daily AI fluency — so you get the same quality, shipped considerably faster, with
-            the repetitive parts automated away.
+            Plenty of people can call an LLM API. The hard part is making one safe
+            enough to answer your customers unsupervised. Everything below runs in
+            Nuigent, the agent handling the front desk of my own shop, 24/7.
           </p>
+          <a
+            href="#/work/nuigent"
+            className="inline-flex items-center gap-1.5 text-brand-orange text-sm font-semibold mt-4 hover:gap-2.5 transition-all"
+          >
+            Read the Nuigent case study <ArrowRight size={14} />
+          </a>
         </div>
 
         {/* Skill cards — flip on hover, but only when motion is welcome.

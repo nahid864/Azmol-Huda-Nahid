@@ -26,7 +26,7 @@ export const SITE_URL =
  */
 /* Fallback filename so the button also renders on the deployed site, where
    .env is gitignored and never reaches the CI build. Override it via .env. */
-const resumeFile = import.meta.env.VITE_RESUME_URL || 'Azmol_Huda_Nahid_CV_soft.pdf'
+const resumeFile = import.meta.env.VITE_RESUME_URL || 'Azmol-Huda-Nahid-CV.pdf'
 export const RESUME_URL = resumeFile
   ? `${import.meta.env.BASE_URL}assets/${resumeFile}`
   : ''
